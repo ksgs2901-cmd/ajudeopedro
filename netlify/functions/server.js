@@ -49,7 +49,7 @@ exports.handler = async (event) => {
 
   /* Extrair o hash do path: /_serverFn/{hash} */
   const pathParts = (event.path || event.rawUrl || "").split("/");
-  const fnHash = pathParts[pathParts.length - 1] || "";
+  const fnHash = event.queryStringParameters?.fnHash || pathParts[pathParts.length - 1] || "";
 
   let body;
   try {
