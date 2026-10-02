@@ -1,68 +1,86 @@
 /**
  * server.js — Netlify Function
  *
- * Intercepta as chamadas do TanStack Server Functions (/_server?_serverFnId=...)
- * e roteia para a lógica correta baseada no serverFnId:
+ * Intercepta chamadas do TanStack Server Functions:
+ *   POST /_serverFn/{fnHash}
  *
- *   85a7da13... → create-pix  (recebe { amountCents })
- *   3b1a0052... → pix-status  (recebe { id: donationId })
+ * O TanStack envia: { data: { amountCents } } ou { data: { id } }
+ * O TanStack lê:   JSON com header "x-tss-serialized: 1"
+ *
+ * Hash dos server functions (do bundle routes-BJthbIvo.js):
+ *   85a7da13... → createPix  (input: { amountCents })
+ *   3b1a0052... → pixStatus  (input: { id: donationId })
  */
 
 const API_URL = "https://api.blackcatoficial.com/api";
 
-const respond = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store",
-    "access-control-allow-origin": "*",
-  },
-  body: JSON.stringify(body),
-});
+const FN_CREATE_PIX = "85a7da13ce7fdaba6b1e1edac497a7cc5455cf15bdf57dbd1be6c4e29433c09d";
+const FN_PIX_STATUS = "3b1a0052fd354b5b4496c6da9443af5ea22064f1c9124c326789d1436d1dbb1b";
 
 const digits = (v) => String(v || "").replace(/\D/g, "");
 
-/* ── IDs dos Server Functions do TanStack (hash do bundle) ── */
-const FN_CREATE_PIX  = "85a7da13ce7fdaba6b1e1edac497a7cc5455cf15bdf57dbd1be6c4e29433c09d";
-const FN_PIX_STATUS  = "3b1a0052fd354b5b4496c6da9443af5ea22064f1c9124c326789d1436d1dbb1b";
+/* Retorna no formato que o TanStack/Seroval espera para objetos simples (JSON puro) */
+const tssRespond = (statusCode, data) => ({
+  statusCode,
+  headers: {
+    "content-type": "application/json; charset=utf-8",
+    "x-tss-serialized": "1",
+    "cache-control": "no-store",
+    "access-control-allow-origin": "*",
+  },
+  body: JSON.stringify(data),
+});
 
-/* ── Handler principal ─────────────────────────────────────── */
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-methods": "POST,OPTIONS", "access-control-allow-headers": "content-type" }, body: "" };
+    return {
+      statusCode: 204,
+      headers: {
+        "access-control-allow-origin": "*",
+        "access-control-allow-methods": "POST,OPTIONS",
+        "access-control-allow-headers": "content-type,x-tss-serialized",
+      },
+      body: "",
+    };
   }
-  if (event.httpMethod !== "POST") return respond(405, { error: "Método não permitido." });
 
-  /* TanStack envia o fnId como query param */
-  const fnId = event.queryStringParameters?._serverFnId || "";
+  if (event.httpMethod !== "POST") {
+    return tssRespond(405, { error: "Método não permitido." });
+  }
 
-  let input;
+  /* Extrair o hash do path: /_serverFn/{hash} */
+  const pathParts = (event.path || event.rawUrl || "").split("/");
+  const fnHash = pathParts[pathParts.length - 1] || "";
+
+  let body;
   try {
-    const parsed = JSON.parse(event.body || "{}");
-    /* TanStack encapsula os dados em { data: {...} } */
-    input = parsed.data || parsed;
+    body = JSON.parse(event.body || "{}");
   } catch {
-    return respond(400, { error: "Payload inválido." });
+    return tssRespond(400, { error: "Payload inválido." });
   }
 
-  if (fnId === FN_CREATE_PIX) {
+  /* TanStack encapsula em { data: ... } */
+  const input = body.data || body;
+
+  if (fnHash === FN_CREATE_PIX || fnHash.startsWith("85a7da13")) {
     return handleCreatePix(input);
   }
-  if (fnId === FN_PIX_STATUS) {
+
+  if (fnHash === FN_PIX_STATUS || fnHash.startsWith("3b1a0052")) {
     return handlePixStatus(input);
   }
 
-  return respond(404, { error: `Server function não encontrada: ${fnId}` });
+  return tssRespond(404, { error: `Server function desconhecida: ${fnHash}` });
 };
 
 /* ── Criar cobrança PIX ─────────────────────────────────────── */
 async function handleCreatePix(input) {
   const apiKey = process.env.BLACKCAT_API_KEY;
-  if (!apiKey) return respond(503, { error: "Gateway de pagamento não configurado." });
+  if (!apiKey) return tssRespond(503, { error: "Gateway de pagamento não configurado." });
 
   const amountCents = Math.round(Number(input.amountCents || 0));
   if (!Number.isInteger(amountCents) || amountCents < 3000 || amountCents > 100000) {
-    return respond(400, { error: "Valor inválido. Escolha entre R$ 30 e R$ 1.000." });
+    return tssRespond(400, { error: "Valor inválido. Escolha entre R$ 30 e R$ 1.000." });
   }
 
   const name  = String(process.env.BLACKCAT_CUSTOMER_NAME  || "Contribuição Anônima").trim();
@@ -75,15 +93,14 @@ async function handleCreatePix(input) {
     !phone && "BLACKCAT_CUSTOMER_PHONE",
     !cpf   && "BLACKCAT_CUSTOMER_DOCUMENT",
   ].filter(Boolean);
-  if (missing.length) return respond(503, { error: `Variáveis ausentes: ${missing.join(", ")}` });
+  if (missing.length) return tssRespond(503, { error: `Variáveis ausentes: ${missing.join(", ")}` });
 
-  /* UTMs */
   const utmFields = {};
-  for (const k of ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"]) {
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
     if (typeof input[k] === "string" && input[k]) utmFields[k] = input[k].slice(0, 200);
   }
 
-  const payload = {
+  const pixPayload = {
     amount: amountCents,
     currency: "BRL",
     paymentMethod: "pix",
@@ -99,40 +116,39 @@ async function handleCreatePix(input) {
     const res = await fetch(`${API_URL}/sales/create-sale`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-api-key": apiKey },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(pixPayload),
     });
     const result = await res.json().catch(() => ({}));
 
     if (!res.ok || !result.success || !result.data?.transactionId) {
-      return respond(502, { error: result.message || "Não conseguimos gerar o Pix. Tente novamente." });
+      return tssRespond(502, { error: result.message || "Não conseguimos gerar o Pix. Tente novamente." });
     }
 
     const { transactionId } = result.data;
     const payment = result.data.paymentData || {};
 
-    /* Se vier invoiceUrl (PagBank), usa checkoutUrl */
     if (result.data.invoiceUrl && !payment.copyPaste) {
-      return respond(200, { kind: "pix", checkoutUrl: result.data.invoiceUrl, donationId: transactionId });
+      return tssRespond(200, { kind: "pix", checkoutUrl: result.data.invoiceUrl, donationId: transactionId });
     }
 
-    return respond(200, {
+    return tssRespond(200, {
       kind: "pix",
       payload: payment.copyPaste || payment.qrCode || "",
       donationId: transactionId,
     });
 
   } catch {
-    return respond(502, { error: "Falha de conexão ao gerar o Pix. Tente novamente." });
+    return tssRespond(502, { error: "Falha de conexão ao gerar o Pix. Tente novamente." });
   }
 }
 
-/* ── Consultar status do PIX ────────────────────────────────── */
+/* ── Consultar status PIX ────────────────────────────────────── */
 async function handlePixStatus(input) {
   const apiKey = process.env.BLACKCAT_API_KEY;
-  if (!apiKey) return respond(503, { error: "Gateway não configurado." });
+  if (!apiKey) return tssRespond(503, { error: "Gateway não configurado." });
 
   const transactionId = String(input.id || "").trim();
-  if (!transactionId) return respond(400, { error: "ID de transação inválido." });
+  if (!transactionId) return tssRespond(400, { error: "ID inválido." });
 
   try {
     const res = await fetch(
@@ -140,13 +156,13 @@ async function handlePixStatus(input) {
       { headers: { "x-api-key": apiKey } }
     );
     const result = await res.json().catch(() => ({}));
-    if (!res.ok || !result.success) return respond(502, { error: "Erro ao consultar pagamento." });
+    if (!res.ok || !result.success) return tssRespond(502, { error: "Erro ao consultar." });
 
-    const statusMap = { PAID: "pago", CONFIRMED: "pago", PENDING: "pendente", CANCELLED: "cancelado", REFUNDED: "cancelado" };
-    const status = statusMap[String(result.data?.status || "PENDING").toUpperCase()] || "pendente";
+    const map = { PAID: "pago", CONFIRMED: "pago", PENDING: "pendente", CANCELLED: "cancelado", REFUNDED: "cancelado" };
+    const status = map[String(result.data?.status || "PENDING").toUpperCase()] || "pendente";
 
-    return respond(200, { status, transactionId });
+    return tssRespond(200, { status, transactionId });
   } catch {
-    return respond(502, { error: "Falha ao consultar o pagamento." });
+    return tssRespond(502, { error: "Falha ao consultar o pagamento." });
   }
 }

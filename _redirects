@@ -1,4 +1,4 @@
-/_server /.netlify/functions/server 200
+/_serverFn/* /.netlify/functions/server 200
 /api/create-pix /.netlify/functions/create-pix 200
 /api/pix-status /.netlify/functions/pix-status 200
 /* /index.html 200
