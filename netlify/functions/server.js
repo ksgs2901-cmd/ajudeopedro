@@ -24,7 +24,6 @@ const tssRespond = (statusCode, data) => ({
   statusCode,
   headers: {
     "content-type": "application/json; charset=utf-8",
-    "x-tss-serialized": "1",
     "cache-control": "no-store",
     "access-control-allow-origin": "*",
   },
