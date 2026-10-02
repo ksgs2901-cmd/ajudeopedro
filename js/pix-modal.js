@@ -33,10 +33,14 @@ function createModal(amount) {
   overlay.className = "pix-backdrop";
   overlay.innerHTML = `
     <section class="pix-dialog" role="dialog" aria-modal="true" aria-labelledby="pix-title">
-      <header class="pix-head"><div><h2 class="pix-title" id="pix-title">Sua contribuição para o Pedro</h2><p class="pix-subtitle">Escaneie o QR Code ou copie o Pix.</p></div>
-        <button class="pix-close" type="button" aria-label="Fechar">&times;</button></header>
+      <button class="pix-close" type="button" aria-label="Fechar">&times;</button>
+      <header class="pix-head">
+        <img class="pix-logo" src="/__l5e/assets-v1/62a9e234-bc8a-4819-a7a0-0ce611ae11d0/logo-juntos-pela-vida-pedro.png" alt="Juntos Pela Vida">
+        <h2 class="pix-title" id="pix-title">Gerando seu Pix...</h2>
+        <p class="pix-subtitle">Só um instante, o QR Code aparece aqui em segundos.</p>
+      </header>
       <div class="pix-content"><div class="pix-amount"><span>Valor da contribuição</span><strong>${formatAmount(amount)}</strong></div>
-        <p class="pix-loading" role="status">Gerando seu Pix...</p>
+        <p class="pix-loading" role="status" aria-label="Gerando seu Pix"><span class="pix-spinner"></span></p>
         <p class="pix-error" role="alert" hidden></p>
         <button class="pix-copy pix-retry" type="button" hidden>Tentar novamente</button>
       </div>
@@ -56,7 +60,7 @@ async function submitDonation(amount) {
   retry.hidden = true;
   error.hidden = true;
   loading.hidden = false;
-  loading.textContent = "Gerando seu Pix...";
+  loading.setAttribute("aria-label", "Gerando seu Pix...");
   try {
     const response = await fetch("/api/create-pix", {
       method: "POST", headers: { "content-type": "application/json" },
@@ -75,9 +79,10 @@ async function submitDonation(amount) {
 
 function showPix(payment, amount) {
   const content = overlay.querySelector(".pix-content");
+  overlay.querySelector(".pix-title").textContent = "Seu Pix está pronto";
+  overlay.querySelector(".pix-subtitle").textContent = "Escaneie o QR Code ou copie o código para pagar.";
   content.innerHTML = `<div class="pix-qr"><div class="pix-amount"><span>Valor da contribuição</span><strong class="pix-value"></strong></div>
     <img class="pix-image" alt="QR Code Pix para pagamento" hidden>
-    <p class="pix-subtitle">Escaneie o QR Code no app do seu banco ou copie o código Pix.</p>
     <textarea class="pix-copycode" readonly aria-label="Código Pix copia e cola"></textarea>
     <button class="pix-copy" type="button">Copiar código Pix</button>
     <p class="pix-status" aria-live="polite">Aguardando confirmação do pagamento.</p>

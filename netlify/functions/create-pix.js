@@ -21,19 +21,24 @@ function validCpf(value) {
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { message: "Método não permitido." });
   const apiKey = process.env.BLACKCAT_API_KEY;
-  if (!apiKey) return json(503, { message: "O pagamento ainda não foi configurado." });
 
   let input;
   try { input = JSON.parse(event.body || "{}"); }
   catch { return json(400, { message: "Não foi possível ler os dados do pagamento." }); }
 
   const amount = Number(input.amount);
-  const name = String(process.env.BLACKCAT_CUSTOMER_NAME || "").trim();
+  const name = String(process.env.BLACKCAT_CUSTOMER_NAME || "Contribuição Anônima").trim();
   const email = String(process.env.BLACKCAT_CUSTOMER_EMAIL || "").trim();
   const phone = digits(process.env.BLACKCAT_CUSTOMER_PHONE);
   const cpf = digits(process.env.BLACKCAT_CUSTOMER_DOCUMENT);
   if (!Number.isInteger(amount) || amount < 3000 || amount > 100000) return json(400, { message: "Escolha um valor entre R$ 30 e R$ 1.000." });
-  if (!name || !email || !phone || !cpf) return json(503, { message: "Os dados da cobrança ainda não foram configurados no Netlify." });
+  const missing = [
+    !apiKey && "BLACKCAT_API_KEY",
+    !email && "BLACKCAT_CUSTOMER_EMAIL",
+    !phone && "BLACKCAT_CUSTOMER_PHONE",
+    !cpf && "BLACKCAT_CUSTOMER_DOCUMENT",
+  ].filter(Boolean);
+  if (missing.length) return json(503, { message: `Faltam variáveis no Netlify: ${missing.join(", ")}.` });
   if (name.length < 3 || name.length > 120) return json(400, { message: "Informe seu nome completo." });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 180) return json(400, { message: "Confira seu e-mail." });
   if (phone.length < 10 || phone.length > 13) return json(400, { message: "Confira seu telefone com DDD." });
