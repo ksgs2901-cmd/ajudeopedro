@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+  <rect width="320" height="320" fill="#e5ddd5"/>
+  <g fill="none" stroke="#6f6450" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.10">
+    <!-- chat bubble -->
+    <g transform="translate(30,28) rotate(-8)">
+      <path d="M0 6a6 6 0 0 1 6-6h26a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6H14l-8 7v-7H6a6 6 0 0 1-6-6Z"/>
+    </g>
+    <!-- heart -->
+    <g transform="translate(150,18) rotate(10)">
+      <path d="M12 22S2 15 2 8a6 6 0 0 1 10-4 6 6 0 0 1 10 4c0 7-10 14-10 14Z"/>
+    </g>
+    <!-- smiley -->
+    <g transform="translate(250,34)">
+      <circle cx="13" cy="13" r="13"/>
+      <circle cx="8" cy="10" r="1.4" fill="#6f6450" stroke="none"/>
+      <circle cx="18" cy="10" r="1.4" fill="#6f6450" stroke="none"/>
+      <path d="M7 16a7 7 0 0 0 12 0"/>
+    </g>
+    <!-- star -->
+    <g transform="translate(95,80) rotate(-6)">
+      <path d="M13 0l4 8 9 1-6.5 6 1.7 9L13 29 4.8 24l1.7-9L0 9l9-1Z"/>
+    </g>
+    <!-- music note -->
+    <g transform="translate(205,92)">
+      <path d="M6 22a4 4 0 1 1-4-4 4 4 0 0 1 4 4ZM6 22V2l16-2v18M22 18a4 4 0 1 1-4-4 4 4 0 0 1 4 4Z"/>
+    </g>
+    <!-- camera -->
+    <g transform="translate(20,128) rotate(6)">
+      <path d="M2 8a4 4 0 0 1 4-4h3l2-3h8l2 3h3a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4Z"/>
+      <circle cx="16" cy="15" r="6"/>
+    </g>
+    <!-- coffee cup -->
+    <g transform="translate(135,150)">
+      <path d="M2 8h20v8a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8ZM22 10h3a4 4 0 0 1 0 8h-3M6 0v3M11 0v3M16 0v3"/>
+    </g>
+    <!-- sun -->
+    <g transform="translate(255,150)">
+      <circle cx="14" cy="14" r="7"/>
+      <path d="M14 0v4M14 24v4M0 14h4M24 14h4M4 4l3 3M21 21l3 3M24 4l-3 3M7 21l-3 3"/>
+    </g>
+    <!-- gift -->
+    <g transform="translate(40,212)">
+      <path d="M2 10h24v6H2ZM4 16h20v12H4ZM14 10v18M14 10c-4 0-7-2-7-5s5-2 7 5Zm0 0c4 0 7-2 7-5s-5-2-7 5Z"/>
+    </g>
+    <!-- balloon -->
+    <g transform="translate(150,218)">
+      <path d="M12 0a10 12 0 0 1 0 24 10 12 0 0 1 0-24ZM12 24v3l-3 4M12 27l3 4"/>
+    </g>
+    <!-- thumbs up -->
+    <g transform="translate(248,222) rotate(-4)">
+      <path d="M6 12H2v14h4ZM6 13l5-11a3 3 0 0 1 3 3v6h7a3 3 0 0 1 3 3.5l-2 9a3 3 0 0 1-3 2.5H6Z"/>
+    </g>
+    <!-- cloud -->
+    <g transform="translate(100,280)">
+      <path d="M7 20a6 6 0 0 1-1-12 8 8 0 0 1 15-2 5 5 0 0 1 1 14Z"/>
+    </g>
+    <!-- lightning -->
+    <g transform="translate(220,278)">
+      <path d="M13 0 2 16h8l-2 12 11-16h-8Z"/>
+    </g>
+  </g>
+</svg>

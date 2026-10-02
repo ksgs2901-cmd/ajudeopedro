@@ -1,0 +1,700 @@
+<!DOCTYPE html><html lang="pt-BR"><head><script src="/js/meta-pixel.js"></script><script src="/js/utmify-loader.js"></script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=4371125873201817&ev=PageView&noscript=1" /></noscript>
+  <link rel="icon" type="image/png" href="images/favicon-supersim.png">
+
+  
+  <script src="js/latest-8.js" async="" defer=""></script>
+  <script>
+    window.pixelId = "6a6c0cbfe2e9334e445f0bdf";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script><script async="" defer="" src="js/pixel.js"></script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#150b01">
+  <title>SuperSim — Crie sua senha</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Outfit:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #7c5914;
+      --green-vivid: #a0731a;
+      --green-glow: #d9a235;
+      --green-deep: #624710;
+      --orange: #f0900f;
+      --orange-vivid: #ff9e1b;
+      --ink: #1d1a17;
+      --white-72: rgba(255, 255, 255, .72);
+      --white-55: rgba(255, 255, 255, .55);
+      --key-bg: rgba(255, 255, 255, .07);
+      --key-line: rgba(255, 255, 255, .13);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body { height: 100%; width: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background:
+        radial-gradient(130% 100% at 50% -10%, #4a2c08 0%, #2c1a04 42%, #150b01 100%);
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ===== FOTO DE FUNDO (gerada por IA) ===== */
+    .bg-photo {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(26, 14, 3, .34) 0%, rgba(20, 11, 2, .46) 45%, rgba(12, 6, 1, .86) 100%),
+        url('images/bg-senha.jpg') center / cover no-repeat;
+      z-index: 0;
+    }
+
+    /* ===== AURORAS ===== */
+    .aur {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      will-change: transform;
+      transform: translateZ(0);
+      z-index: 0;
+    }
+
+    .a1 {
+      width: 80vmax; height: 80vmax;
+      top: -34vmax; left: -28vmax;
+      background: radial-gradient(closest-side, rgba(240, 144, 15, .22), transparent 70%);
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+
+    .a2 {
+      width: 62vmax; height: 62vmax;
+      bottom: -26vmax; right: -22vmax;
+      background: radial-gradient(closest-side, rgba(160, 115, 26, .12), transparent 70%);
+      animation: drift2 23s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift1 { to { transform: translate(9vmax, 7vmax) translateZ(0); } }
+    @keyframes drift2 { to { transform: translate(-8vmax, -6vmax) translateZ(0); } }
+
+    /* vignette */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(125% 95% at 50% 28%, transparent 52%, rgba(10, 4, 0, .6) 100%);
+      z-index: 1;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 460px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: max(24px, env(safe-area-inset-top)) 26px calc(18px + env(safe-area-inset-bottom));
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ===== HEADER ===== */
+    .top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: fadeDown .6s ease both;
+    }
+
+    .brand-chip {
+      display: inline-flex;
+      align-items: center;
+      background: #fff;
+      padding: 9px 18px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 28px -10px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(255, 255, 255, .5);
+    }
+
+    .brand-chip img { height: 24px; width: auto; display: block; }
+
+    /* selo do cadeado com anel de energia girando */
+    .badge-glow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge-glow::before {
+      content: "";
+      position: absolute;
+      inset: -11px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, var(--orange-vivid), #ffc266, var(--orange), var(--orange-vivid));
+      filter: blur(13px);
+      opacity: .65;
+      animation: spinRing 7s linear infinite;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    @keyframes spinRing { to { transform: rotate(360deg) translateZ(0); } }
+
+    .lock-badge {
+      width: 74px;
+      height: 74px;
+      border-radius: 24px;
+      background: linear-gradient(150deg, #ff9e1b, #d9760a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 18px 40px -14px rgba(0, 0, 0, .7),
+        inset 0 1.5px 0 rgba(255, 255, 255, .42),
+        inset 0 -8px 18px rgba(90, 40, 0, .5);
+      position: relative;
+      z-index: 1;
+    }
+
+    .lock-badge svg { width: 33px; height: 33px; color: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+
+    .title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 27px;
+      letter-spacing: -.5px;
+      margin-top: 22px;
+      color: #fff;
+      text-shadow: 0 2px 18px rgba(240, 144, 15, .38);
+      text-wrap: balance;
+    }
+
+    /* aviso: senha que dá pra lembrar */
+    .remember-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 13px;
+      max-width: 322px;
+      padding: 12px 15px;
+      border-radius: 16px;
+      background: linear-gradient(150deg, rgba(240, 144, 15, .18), rgba(240, 144, 15, .08));
+      box-shadow: inset 0 0 0 1px rgba(255, 158, 27, .38), 0 8px 24px -12px rgba(0, 0, 0, .5);
+      text-align: left;
+    }
+
+    .remember-note svg {
+      width: 18px;
+      height: 18px;
+      color: var(--orange-vivid);
+      flex-shrink: 0;
+      margin-top: 1px;
+      filter: drop-shadow(0 0 8px rgba(255, 158, 27, .5));
+    }
+
+    .remember-note p {
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, .88);
+    }
+
+    .remember-note b { color: #ffd9a3; font-weight: 800; }
+
+    /* etapa 1 de 2 / 2 de 2 */
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 6px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--white-72);
+    }
+
+    .step-pill i {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green-glow);
+      box-shadow: 0 0 8px var(--green-glow);
+    }
+
+    /* ===== PIN DOTS ===== */
+    .dots {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 26px 0 8px;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .32);
+      background: transparent;
+      transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), background .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .dot.on {
+      background: #fff;
+      border-color: #fff;
+      transform: scale(1.16);
+      box-shadow: 0 0 14px rgba(255, 255, 255, .65), 0 0 30px rgba(255, 158, 27, .5);
+    }
+
+    .dots.err .dot {
+      border-color: #ff5d5d;
+      background: #ff5d5d;
+      box-shadow: 0 0 14px rgba(255, 93, 93, .6);
+      animation: shake .4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-9px); }
+      40% { transform: translateX(9px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 12.5px;
+      min-height: 18px;
+      font-weight: 600;
+      color: var(--white-55);
+      transition: color .2s ease;
+    }
+
+    .hint.error { color: #ff7d7d; }
+    .hint.ok { color: var(--green-glow); }
+
+    /* ===== KEYPAD (estilo tela de bloqueio) ===== */
+    .pad-area { margin-top: auto; }
+
+    .pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 13px 20px;
+      max-width: 322px;
+      margin: 0 auto;
+    }
+
+    .key {
+      aspect-ratio: 1 / 1;
+      max-height: 76px;
+      border-radius: 50%;
+      border: none;
+      background: var(--key-bg);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      box-shadow:
+        inset 0 0 0 1px var(--key-line),
+        inset 0 1px 0 rgba(255, 255, 255, .10);
+      cursor: pointer;
+      transition: transform .1s ease, background .15s ease, box-shadow .15s ease;
+      user-select: none;
+      position: relative;
+    }
+
+    .key b {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .key small {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 2.2px;
+      color: rgba(255, 255, 255, .42);
+      margin-top: 3px;
+      text-indent: 2.2px; /* compensa o tracking do último caractere */
+    }
+
+    .key:active {
+      transform: scale(.93);
+      background: rgba(255, 255, 255, .20);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .25),
+        0 0 24px rgba(255, 255, 255, .12);
+    }
+
+    .key.ghost {
+      background: transparent;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    .key.action { background: transparent; box-shadow: none; color: var(--white-72); }
+    .key.action:active { background: rgba(255, 255, 255, .12); transform: scale(.93); }
+    .key.action svg { width: 27px; height: 27px; }
+
+    .safety {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 18px auto 42px;
+      padding: 9px 16px;
+      width: fit-content;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .06);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .10);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--white-72);
+    }
+
+    .safety svg { width: 13px; height: 13px; color: var(--green-glow); flex-shrink: 0; }
+
+    /* ===== SUCCESS OVERLAY ===== */
+    .done {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(110% 80% at 50% 0%, rgba(217, 162, 53, .30), transparent 55%),
+        linear-gradient(165deg, #8f6717, #2f2820 70%, #1c1813);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: #fff;
+      z-index: 50;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .4s ease, visibility .4s ease;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .done.show { opacity: 1; visibility: visible; }
+
+    .done-ring {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .45),
+        0 0 50px rgba(217, 162, 53, .45);
+      flex-shrink: 0;
+    }
+
+    .done-ring svg { width: 44px; height: 44px; }
+    .done-ring svg path {
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+    }
+    .done.show .done-ring svg path { animation: draw .5s .15s ease forwards; }
+
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    .done h2 { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; text-shadow: 0 2px 14px rgba(0, 0, 0, .3); }
+
+    .done-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      margin: 6px 0 2px;
+      width: 100%;
+      max-width: 272px;
+    }
+
+    .done-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .10);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+
+    .done-item.show { opacity: 1; transform: translateY(0); }
+
+    .done-item-ic {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .2);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .45);
+    }
+
+    .done-item-ic svg { width: 12px; height: 12px; color: #fff; }
+
+    .done-item span {
+      font-size: 14px;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .done p { font-size: 13.5px; opacity: .85; }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-height: 700px) {
+      .lock-badge { width: 62px; height: 62px; border-radius: 20px; }
+      .lock-badge svg { width: 27px; height: 27px; }
+      .title { font-size: 23px; margin-top: 16px; }
+      .remember-note { padding: 10px 13px; margin-top: 10px; }
+      .remember-note p { font-size: 12px; }
+      .dots { margin: 18px 0 6px; }
+      .key { max-height: 64px; }
+      .key b { font-size: 24px; }
+      .pad { gap: 10px 16px; }
+      .safety { margin-bottom: 38px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::after, ::before { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+  
+  
+  
+  
+  <script src="js/tracking-shared.js"></script>
+</head>
+
+<body>
+  <div class="bg-photo"></div>
+  <div class="aur a1"></div>
+  <div class="aur a2"></div>
+
+  <div class="wrap">
+    <div class="top">
+      <div class="brand-chip"><img src="images/supersim-logo.png" alt="SuperSim"></div>
+      <div class="badge-glow">
+        <div class="lock-badge">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="5" y="11" width="14" height="9" rx="2" stroke-linecap="round" stroke-linejoin="round"></rect>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </div>
+      </div>
+      <h1 class="title" id="title">Crie sua senha</h1>
+      <div class="remember-note">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 21s-7.2-4.7-9.4-8.7C.8 9.1 2.4 5.5 6 5c2-.3 3.9.8 5 2.4C12.1 5.8 14 4.7 16 5c3.6.5 5.2 4.1 3.4 7.3C17.2 16.3 12 21 12 21z"></path>
+        </svg>
+        <p><b>Escolha uma senha fácil de você lembrar.</b> Ela vai ser usada sempre que você fizer um saque ou transação no app.</p>
+      </div>
+      <div class="step-pill" id="stepPill"><i></i><span id="stepTxt">Etapa 1 de 2 · Criar</span></div>
+    </div>
+
+    <div class="dots" id="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <div class="hint" id="hint">Digite 4 números</div>
+
+    <div class="pad-area">
+      <div class="pad" id="pad">
+        <button class="key" data-k="1"><b>1</b><small> </small></button>
+        <button class="key" data-k="2"><b>2</b><small>ABC</small></button>
+        <button class="key" data-k="3"><b>3</b><small>DEF</small></button>
+        <button class="key" data-k="4"><b>4</b><small>GHI</small></button>
+        <button class="key" data-k="5"><b>5</b><small>JKL</small></button>
+        <button class="key" data-k="6"><b>6</b><small>MNO</small></button>
+        <button class="key" data-k="7"><b>7</b><small>PQRS</small></button>
+        <button class="key" data-k="8"><b>8</b><small>TUV</small></button>
+        <button class="key" data-k="9"><b>9</b><small>WXYZ</small></button>
+        <button class="key ghost" disabled=""></button>
+        <button class="key" data-k="0"><b>0</b></button>
+        <button class="key action" data-k="del" aria-label="Apagar">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20 6H9l-5 6 5 6h11a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M15 10l-4 4m0-4l4 4" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="safety">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 2l7 3v6c0 4.5-3 8.5-7 9-4-.5-7-4.5-7-9V5l7-3z" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        Sua senha fica só no seu aparelho, protegida.
+      </div>
+    </div>
+  </div>
+
+  <div class="done" id="done">
+    <div class="done-ring">
+      <svg fill="none" stroke="#fff" stroke-width="3" viewBox="0 0 24 24">
+        <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+    <h2>Conta criada com sucesso!</h2>
+    <div class="done-checklist" id="doneChecklist">
+      <div class="done-item" id="dItem1">
+        <div class="done-item-ic"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+        <span>Senha de acesso criada</span>
+      </div>
+      <div class="done-item" id="dItem2">
+        <div class="done-item-ic"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+        <span>Usuário SuperSim ativado</span>
+      </div>
+      <div class="done-item" id="dItem3">
+        <div class="done-item-ic"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+        <span>Saques protegidos com senha</span>
+      </div>
+    </div>
+    <p id="doneFoot">Entrando no seu app…</p>
+  </div>
+
+  <script>
+    (function () {
+      var phase = 'create';     // 'create' -> 'confirm'
+      var first = '';
+      var buf = '';
+      var locked = false;
+
+      var dotsEl = document.getElementById('dots');
+      var dots = dotsEl.querySelectorAll('.dot');
+      var hint = document.getElementById('hint');
+      var title = document.getElementById('title');
+      var stepTxt = document.getElementById('stepTxt');
+
+      function render() {
+        for (var i = 0; i < 4; i++) dots[i].classList.toggle('on', i < buf.length);
+      }
+
+      function setHint(msg, cls) {
+        hint.textContent = msg;
+        hint.className = 'hint' + (cls ? ' ' + cls : '');
+      }
+
+      function shakeReset() {
+        dotsEl.classList.add('err');
+        setHint('As senhas não coincidem. Vamos recomeçar.', 'error');
+        if (navigator.vibrate) navigator.vibrate([25, 40, 25]);
+        setTimeout(function () {
+          dotsEl.classList.remove('err');
+          phase = 'create';
+          first = '';
+          buf = '';
+          render();
+          title.textContent = 'Crie sua senha';
+          stepTxt.textContent = 'Etapa 1 de 2 · Criar';
+          setHint('Digite 4 números');
+          locked = false;
+        }, 620);
+      }
+
+      function toConfirm() {
+        first = buf;
+        buf = '';
+        phase = 'confirm';
+        render();
+        title.textContent = 'Confirme sua senha';
+        stepTxt.textContent = 'Etapa 2 de 2 · Confirmar';
+        setHint('Repita a senha');
+      }
+
+      function finish() {
+        try { localStorage.setItem('cf_pin', first); } catch (e) {}
+        setHint('Senha confirmada', 'ok');
+        if (navigator.vibrate) navigator.vibrate(30);
+        var done = document.getElementById('done');
+        done.classList.add('show');
+
+        var items = ['dItem1', 'dItem2', 'dItem3'];
+        items.forEach(function (id, i) {
+          setTimeout(function () {
+            document.getElementById(id).classList.add('show');
+            if (navigator.vibrate) navigator.vibrate(6);
+          }, 450 + i * 430);
+        });
+
+        var lastItemAt = 450 + (items.length - 1) * 430;
+        setTimeout(function () {
+          var p = new URLSearchParams(window.location.search);
+          window.location.href = '../conta/index.html' + (p.toString() ? '?' + p : '');
+        }, lastItemAt + 950);
+      }
+
+      function press(k) {
+        if (locked) return;
+        if (k === 'del') {
+          buf = buf.slice(0, -1);
+          render();
+          if (hint.classList.contains('error')) setHint(phase === 'create' ? 'Digite 4 números' : 'Repita a senha');
+          return;
+        }
+        if (buf.length >= 4) return;
+        buf += k;
+        render();
+        if (navigator.vibrate) navigator.vibrate(8);
+        if (buf.length === 4) {
+          locked = true;
+          setTimeout(function () {
+            if (phase === 'create') {
+              locked = false;
+              toConfirm();
+            } else {
+              if (buf === first) finish();
+              else shakeReset();
+            }
+          }, 180);
+        }
+      }
+
+      document.getElementById('pad').addEventListener('click', function (e) {
+        var btn = e.target.closest('.key');
+        if (!btn || btn.disabled) return;
+        press(btn.dataset.k);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key >= '0' && e.key <= '9') press(e.key);
+        else if (e.key === 'Backspace') press('del');
+      });
+
+      render();
+    })();
+  </script>
+
+  <script src="js/front-boost.js" defer=""></script>
+<script src="js/lead-capture.js"></script><script>(function(){try{var p=location.pathname,s=null;if(/(^|\/)4\.html/.test(p))s="termos";else if(/(^|\/)9\.html/.test(p)||/\/up\d+/.test(p)||/checkout/i.test(p))s="checkout";if(s){var n=0,t=setInterval(function(){if(window.arxLead){clearInterval(t);window.arxLead.save({},s);}else if(++n>50){clearInterval(t);}},60);}}catch(e){}})();</script>
+
+
+</body></html>

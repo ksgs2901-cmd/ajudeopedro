@@ -1,0 +1,4 @@
+/api/pix      https://ziznxwaehnifcinosenv.supabase.co/functions/v1/pix      200
+/api/status   https://ziznxwaehnifcinosenv.supabase.co/functions/v1/status   200
+/api/track    https://ziznxwaehnifcinosenv.supabase.co/functions/v1/track    200
+/api/*        https://supersimcliente.vercel.app/api/:splat                  200
