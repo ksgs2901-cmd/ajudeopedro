@@ -1,84 +1,124 @@
+/**
+ * create-pix.js — Netlify Function
+ *
+ * Recebe do React: { amountCents, utm_source, utm_medium, utm_campaign, utm_content, utm_term, referrer, host, path, fbp, fbc, visitorId }
+ * Responde para o React: { kind: "pix", payload, donationId } ou { kind: "pix", checkoutUrl, donationId }
+ *
+ * API BlackCat: POST /sales/create-sale com header X-API-Key
+ */
+
 const API_URL = "https://api.blackcatoficial.com/api";
+
 const json = (statusCode, body) => ({
   statusCode,
-  headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+  headers: {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+    "access-control-allow-origin": "*",
+  },
   body: JSON.stringify(body),
 });
-const digits = (value) => String(value || "").replace(/\D/g, "");
 
-function validCpf(value) {
-  const cpf = digits(value);
-  if (cpf.length !== 11 || /^([0-9])\1{10}$/.test(cpf)) return false;
-  const check = (length) => {
-    let sum = 0;
-    for (let index = 0; index < length; index += 1) sum += Number(cpf[index]) * (length + 1 - index);
-    const remainder = (sum * 10) % 11;
-    return remainder === 10 ? 0 : remainder;
-  };
-  return check(9) === Number(cpf[9]) && check(10) === Number(cpf[10]);
-}
+const digits = (v) => String(v || "").replace(/\D/g, "");
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") return json(405, { message: "Método não permitido." });
+  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-methods": "POST,OPTIONS", "access-control-allow-headers": "content-type" }, body: "" };
+  if (event.httpMethod !== "POST") return json(405, { error: "Método não permitido." });
+
   const apiKey = process.env.BLACKCAT_API_KEY;
+  if (!apiKey) return json(503, { error: "Gateway de pagamento não configurado." });
 
   let input;
   try { input = JSON.parse(event.body || "{}"); }
-  catch { return json(400, { message: "Não foi possível ler os dados do pagamento." }); }
+  catch { return json(400, { error: "Payload inválido." }); }
 
-  const amount = Number(input.amount);
-  const name = String(process.env.BLACKCAT_CUSTOMER_NAME || "Contribuição Anônima").trim();
-  const email = String(process.env.BLACKCAT_CUSTOMER_EMAIL || "").trim();
-  const phone = digits(process.env.BLACKCAT_CUSTOMER_PHONE);
-  const cpf = digits(process.env.BLACKCAT_CUSTOMER_DOCUMENT);
-  if (!Number.isInteger(amount) || amount < 3000 || amount > 100000) return json(400, { message: "Escolha um valor entre R$ 30 e R$ 1.000." });
-  const missing = [
-    !apiKey && "BLACKCAT_API_KEY",
-    !email && "BLACKCAT_CUSTOMER_EMAIL",
-    !phone && "BLACKCAT_CUSTOMER_PHONE",
-    !cpf && "BLACKCAT_CUSTOMER_DOCUMENT",
-  ].filter(Boolean);
-  if (missing.length) return json(503, { message: `Faltam variáveis no Netlify: ${missing.join(", ")}.` });
-  if (name.length < 3 || name.length > 120) return json(400, { message: "Informe seu nome completo." });
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 180) return json(400, { message: "Confira seu e-mail." });
-  if (phone.length < 10 || phone.length > 13) return json(400, { message: "Confira seu telefone com DDD." });
-  if (!validCpf(cpf)) return json(400, { message: "Confira o CPF informado." });
-
-  const payload = {
-    amount,
-    currency: "BRL",
-    paymentMethod: "pix",
-    items: [{ title: "Contribuição para o tratamento do Pedro", unitPrice: amount, quantity: 1, tangible: false }],
-    customer: { name, email, phone, document: { number: cpf, type: "cpf" } },
-    pix: { expiresInDays: 1 },
-    externalRef: `pedro-${require("node:crypto").randomUUID()}`,
-    metadata: "Doação para o tratamento do Pedro",
-  };
-  const utm = input.utm || {};
-  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
-    if (typeof utm[key] === "string" && utm[key].length <= 180) payload[key] = utm[key];
+  /* O React envia amountCents (ex: 10000 = R$100) */
+  const amountCents = Math.round(Number(input.amountCents || input.amount || 0));
+  if (!Number.isInteger(amountCents) || amountCents < 3000 || amountCents > 100000) {
+    return json(400, { error: "Valor inválido. Escolha entre R$ 30 e R$ 1.000." });
   }
 
+  /* Dados do doador vindos das env vars (anonimato) */
+  const name  = String(process.env.BLACKCAT_CUSTOMER_NAME  || "Contribuição Anônima").trim();
+  const email = String(process.env.BLACKCAT_CUSTOMER_EMAIL || "").trim();
+  const phone = digits(process.env.BLACKCAT_CUSTOMER_PHONE);
+  const cpf   = digits(process.env.BLACKCAT_CUSTOMER_DOCUMENT);
+
+  const missing = [
+    !email && "BLACKCAT_CUSTOMER_EMAIL",
+    !phone && "BLACKCAT_CUSTOMER_PHONE",
+    !cpf   && "BLACKCAT_CUSTOMER_DOCUMENT",
+  ].filter(Boolean);
+  if (missing.length) return json(503, { error: `Variáveis de ambiente ausentes: ${missing.join(", ")}` });
+
+  /* Montar UTMs */
+  const utmFields = {};
+  for (const k of ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"]) {
+    if (typeof input[k] === "string" && input[k]) utmFields[k] = input[k].slice(0, 200);
+  }
+
+  const externalRef = `pedro-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  const payload = {
+    amount: amountCents,
+    currency: "BRL",
+    paymentMethod: "pix",
+    items: [{
+      title: "Contribuição para o tratamento do Pedro",
+      unitPrice: amountCents,
+      quantity: 1,
+      tangible: false,
+    }],
+    customer: {
+      name,
+      email,
+      phone,
+      document: { number: cpf, type: "cpf" },
+    },
+    pix: { expiresInDays: 1 },
+    externalRef,
+    metadata: "Doação Juntos Pela Vida — Pedro",
+    ...utmFields,
+  };
+
   try {
-    const response = await fetch(`${API_URL}/sales/create-sale`, {
+    const res = await fetch(`${API_URL}/sales/create-sale`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": apiKey },
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+      },
       body: JSON.stringify(payload),
     });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.success || !result.data?.transactionId) {
-      return json(502, { message: result.message || "Não conseguimos gerar o Pix agora." });
+
+    const result = await res.json().catch(() => ({}));
+
+    if (!res.ok || !result.success || !result.data?.transactionId) {
+      return json(502, { error: result.message || "Não conseguimos gerar o Pix agora. Tente novamente." });
     }
+
+    const { transactionId } = result.data;
     const payment = result.data.paymentData || {};
+
+    /* O React espera: { kind, payload (=copyPaste), donationId }
+       Se a API retornar invoiceUrl (PagBank), mandamos checkoutUrl em vez de payload */
+    if (result.data.invoiceUrl && !payment.copyPaste) {
+      return json(200, {
+        kind: "pix",
+        checkoutUrl: result.data.invoiceUrl,
+        donationId: transactionId,
+      });
+    }
+
     return json(200, {
-      transactionId: result.data.transactionId,
-      status: result.data.status,
+      kind: "pix",
+      payload: payment.copyPaste || payment.qrCode || "",
+      donationId: transactionId,
+      /* extra: qrCodeBase64 caso o React seja atualizado para usá-lo */
       qrCodeBase64: payment.qrCodeBase64 || "",
-      copyPaste: payment.copyPaste || payment.qrCode || "",
-      expiresAt: payment.expiresAt || "",
-      invoiceUrl: result.data.invoiceUrl || "",
     });
-  } catch {
-    return json(502, { message: "Falha de conexão ao gerar o Pix. Tente novamente." });
+
+  } catch (err) {
+    return json(502, { error: "Falha de conexão ao gerar o Pix. Tente novamente." });
   }
 };
