@@ -6,7 +6,6 @@ document.head.append(stylesheet);
 const formatAmount = (cents) => new Intl.NumberFormat("pt-BR", {
   style: "currency", currency: "BRL", maximumFractionDigits: 0,
 }).format(cents / 100);
-const digits = (value) => value.replace(/\D/g, "");
 let overlay;
 let pollTimer;
 
@@ -34,63 +33,43 @@ function createModal(amount) {
   overlay.className = "pix-backdrop";
   overlay.innerHTML = `
     <section class="pix-dialog" role="dialog" aria-modal="true" aria-labelledby="pix-title">
-      <header class="pix-head"><div><h2 class="pix-title" id="pix-title">Sua contribuição para o Pedro</h2><p class="pix-subtitle">Preencha os dados para gerar seu Pix.</p></div>
+      <header class="pix-head"><div><h2 class="pix-title" id="pix-title">Sua contribuição para o Pedro</h2><p class="pix-subtitle">Escaneie o QR Code ou copie o Pix.</p></div>
         <button class="pix-close" type="button" aria-label="Fechar">&times;</button></header>
       <div class="pix-content"><div class="pix-amount"><span>Valor da contribuição</span><strong>${formatAmount(amount)}</strong></div>
-        <form class="pix-form"><div class="pix-fields">
-          <label class="pix-field">Nome completo<input name="name" autocomplete="name" minlength="3" maxlength="120" required></label>
-          <label class="pix-field">E-mail<input name="email" type="email" autocomplete="email" maxlength="180" required></label>
-          <label class="pix-field">Telefone com DDD<input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" placeholder="(11) 99999-9999" required></label>
-          <label class="pix-field">CPF<input name="document" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required></label>
-          <button class="pix-primary" type="submit">Gerar Pix</button>
-        </div><p class="pix-privacy">Seus dados são enviados com segurança para processar a contribuição.</p><p class="pix-error" role="alert" hidden></p></form>
+        <p class="pix-loading" role="status">Gerando seu Pix...</p>
+        <p class="pix-error" role="alert" hidden></p>
+        <button class="pix-copy pix-retry" type="button" hidden>Tentar novamente</button>
       </div>
     </section>`;
   document.body.append(overlay);
   overlay.querySelector(".pix-close").addEventListener("click", closeModal);
   overlay.addEventListener("click", (event) => { if (event.target === overlay) closeModal(); });
-  overlay.querySelector("form").addEventListener("submit", (event) => submitDonation(event, amount));
-  overlay.querySelector('input[name="phone"]').addEventListener("input", (event) => {
-    const value = digits(event.target.value).slice(0, 11);
-    event.target.value = value.length > 6
-      ? `(${value.slice(0, 2)}) ${value.slice(2, value.length === 11 ? 7 : 6)}-${value.slice(value.length === 11 ? 7 : 6)}`
-      : value;
-  });
-  overlay.querySelector('input[name="document"]').addEventListener("input", (event) => {
-    const value = digits(event.target.value).slice(0, 11);
-    event.target.value = value.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  });
-  overlay.querySelector('input[name="name"]').focus();
+  overlay.querySelector(".pix-retry").addEventListener("click", () => submitDonation(amount));
+  submitDonation(amount);
 }
 
-async function submitDonation(event, amount) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const submit = form.querySelector('button[type="submit"]');
-  const error = form.querySelector(".pix-error");
-  const values = new FormData(form);
-  const customer = {
-    name: String(values.get("name")).trim(),
-    email: String(values.get("email")).trim(),
-    phone: digits(String(values.get("phone"))),
-    document: digits(String(values.get("document"))),
-  };
-  submit.disabled = true;
-  submit.textContent = "Gerando Pix...";
+async function submitDonation(amount) {
+  if (!overlay) return;
+  const retry = overlay.querySelector(".pix-retry");
+  const error = overlay.querySelector(".pix-error");
+  const loading = overlay.querySelector(".pix-loading");
+  retry.hidden = true;
   error.hidden = true;
+  loading.hidden = false;
+  loading.textContent = "Gerando seu Pix...";
   try {
     const response = await fetch("/api/create-pix", {
       method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ amount, customer, utm: currentUtm() }),
+      body: JSON.stringify({ amount, utm: currentUtm() }),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || "Não conseguimos gerar o Pix agora.");
     showPix(result, amount);
     if (result.transactionId) pollStatus(result.transactionId);
   } catch (err) {
+    loading.hidden = true;
     setError(err.message || "Falha ao gerar o Pix. Tente novamente.");
-    submit.disabled = false;
-    submit.textContent = "Tentar novamente";
+    retry.hidden = false;
   }
 }
 
