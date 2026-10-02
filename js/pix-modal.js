@@ -99,12 +99,24 @@
 
     /* QR Code — a API retorna base64 da imagem */
     if (!qs(".pix-qr-wrap")) {
+      const imageData = String(qrCodeBase64 || "").trim();
+      const dataUriPattern = /^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/=\s]+$/i;
+      const base64Pattern = /^[a-z0-9+/=\s]+$/i;
+      if (!dataUriPattern.test(imageData) && !base64Pattern.test(imageData)) {
+        showError("A Blackcat retornou um QR Code inválido. Tente novamente.");
+        return;
+      }
       const qrWrap = document.createElement("div");
       qrWrap.className = "pix-qr-wrap";
-      qrWrap.innerHTML = `
-        <div class="pix-qr-box">
-          <img src="${qrCodeBase64}" alt="QR Code PIX" width="200" height="200" />
-        </div>`;
+      const qrBox = document.createElement("div");
+      qrBox.className = "pix-qr-box";
+      const image = document.createElement("img");
+      image.alt = "QR Code PIX";
+      image.width = 200;
+      image.height = 200;
+      image.src = dataUriPattern.test(imageData) ? imageData : `data:image/png;base64,${imageData}`;
+      qrBox.appendChild(image);
+      qrWrap.appendChild(qrBox);
       body.appendChild(qrWrap);
     }
 
@@ -322,5 +334,26 @@
 
   /* ── API pública ──────────────────────────────── */
   window.openPixModal = createModal;
+
+  function bindAmountButtons() {
+    document.querySelectorAll(".gridWrap .opt").forEach((button) => {
+      if (button.dataset.pixModalBound === "true") return;
+      const match = button.textContent.match(/R\$\s*([\d.]+)/);
+      const amount = match ? Number(match[1].replace(/\./g, "")) : NaN;
+      if (!Number.isInteger(amount) || amount < 30 || amount > 1000) return;
+
+      button.dataset.pixModalBound = "true";
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        createModal(amount * 100);
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindAmountButtons, { once: true });
+  } else {
+    bindAmountButtons();
+  }
 
 })();
