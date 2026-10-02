@@ -8,6 +8,7 @@
  */
 
 const API_URL = "https://api.blackcatoficial.com/api";
+const QRCode = require("qrcode");
 
 const json = (statusCode, body) => ({
   statusCode,
@@ -98,19 +99,58 @@ exports.handler = async (event) => {
     }
 
     const { transactionId } = result.data;
-    const payment = result.data.paymentData || {};
-    const qrCodeBase64 = payment.qrCodeBase64 || "";
-    const copyPaste = payment.copyPaste || payment.qrCode || "";
+    const paymentSources = [result.data.paymentData, result.data.pix, result.data]
+      .filter((value) => value && typeof value === "object");
+    const getPaymentText = (keys) => {
+      for (const source of paymentSources) {
+        for (const key of keys) {
+          if (typeof source[key] === "string" && source[key].trim()) return source[key].trim();
+        }
+      }
+      return "";
+    };
+    const qrImagePattern = /^data:image\/(?:png|jpeg|webp);base64,/i;
+    const imageData = getPaymentText([
+      "qrCodeBase64", "qrCodeImage", "qrImage", "qr_code_base64", "qr_code_image",
+    ]);
+    const rawQr = getPaymentText(["qrCode", "qr_code", "brCode", "pixCode", "payload"]);
+    const copyPaste = getPaymentText([
+      "copyPaste", "pixCopyPaste", "qrCodeText", "qr_code_text", "pix_copy_paste",
+    ]) || (rawQr && !qrImagePattern.test(rawQr) ? rawQr : "");
+    const qrCodeBase64 = imageData || (qrImagePattern.test(rawQr) ? rawQr : "");
+    const invoiceUrl = getPaymentText(["invoiceUrl", "checkoutUrl", "paymentUrl"]);
 
-    if (!qrCodeBase64 || !copyPaste) {
-      return json(502, { error: "A Blackcat não retornou o QR Code e o código Pix." });
+    let generatedQr = qrCodeBase64;
+    if (!generatedQr && copyPaste) {
+      generatedQr = await QRCode.toDataURL(copyPaste, {
+        errorCorrectionLevel: "M",
+        margin: 1,
+        width: 320,
+      });
+    }
+
+    if (!generatedQr && !copyPaste && invoiceUrl) {
+      return json(200, {
+        transactionId,
+        checkoutUrl: invoiceUrl,
+        expiresAt: getPaymentText(["expiresAt"]),
+      });
+    }
+
+    if (!generatedQr && !copyPaste) {
+      const fields = paymentSources.flatMap((source) => Object.keys(source)).filter((key, index, all) => all.indexOf(key) === index);
+      return json(502, {
+        error: `A Blackcat criou a cobrança, mas não retornou QR, código Pix ou link. Campos: ${fields.slice(0, 20).join(", ") || "nenhum"}.`,
+        transactionId,
+      });
     }
 
     return json(200, {
       transactionId,
-      qrCodeBase64,
+      qrCodeBase64: generatedQr,
       copyPaste,
-      expiresAt: payment.expiresAt || "",
+      expiresAt: getPaymentText(["expiresAt"]),
+      invoiceUrl,
     });
 
   } catch (err) {

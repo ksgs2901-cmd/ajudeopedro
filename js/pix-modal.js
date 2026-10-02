@@ -121,7 +121,7 @@
     }
 
     /* Campo copia e cola */
-    if (!qs(".pix-code-field")) {
+    if (copyPaste && !qs(".pix-code-field")) {
       const codeField = document.createElement("input");
       codeField.type      = "text";
       codeField.className = "pix-code-field";
@@ -132,7 +132,7 @@
     }
 
     /* Botão copiar */
-    if (!qs(".pix-copy-btn")) {
+    if (copyPaste && !qs(".pix-copy-btn")) {
       const ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
       const copyBtn = document.createElement("button");
       copyBtn.type      = "button";
@@ -166,9 +166,41 @@
     if (!qs(".pix-instructions")) {
       const inst = document.createElement("p");
       inst.className = "pix-instructions";
-      inst.innerHTML  = `Abra seu banco &bull; Escolha PIX Copia e Cola &bull; Confirme<br><strong>A confirmação aparece aqui automaticamente<br>após o pagamento.</strong>`;
+      inst.textContent = copyPaste
+        ? "Abra seu banco e escaneie o QR Code ou copie o Pix. A confirmação aparece aqui após o pagamento."
+        : "Abra o app do seu banco e escaneie o QR Code. A confirmação aparece aqui após o pagamento.";
       body.appendChild(inst);
     }
+  }
+
+  function showCheckoutLink(checkoutUrl) {
+    if (!overlay) return;
+    let url;
+    try {
+      url = new URL(checkoutUrl);
+    } catch {
+      showError("A Blackcat retornou um link de pagamento inválido.");
+      return;
+    }
+    if (url.protocol !== "https:") {
+      showError("A Blackcat retornou um link de pagamento inválido.");
+      return;
+    }
+
+    qs(".pix-title").textContent = "Seu Pix está pronto";
+    qs(".pix-value-label").textContent = "A cobrança foi criada";
+    const body = qs(".pix-body");
+    clearBody(".pix-spinner-wrap", ".pix-wait-text", ".pix-error", ".pix-retry-btn");
+    const message = document.createElement("p");
+    message.className = "pix-wait-text";
+    message.textContent = "Abra a página segura da Blackcat para visualizar e pagar o Pix.";
+    const link = document.createElement("a");
+    link.className = "pix-copy-btn";
+    link.href = url.href;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Abrir pagamento Pix";
+    body.append(message, link);
   }
 
   /* Fallback para navigator.clipboard indisponível */
@@ -269,6 +301,12 @@
         return;
       }
 
+      if (data.checkoutUrl && data.transactionId) {
+        showCheckoutLink(data.checkoutUrl);
+        pollStatus(data.transactionId);
+        return;
+      }
+
       /* Campos retornados pela nossa Netlify Function (alinhados com doc BlackCat):
          - data.transactionId  → ID da transação
          - data.qrCodeBase64   → "data:image/png;base64,..." para o <img>
@@ -276,7 +314,7 @@
       */
       const { transactionId, qrCodeBase64, copyPaste } = data;
 
-      if (!transactionId || !qrCodeBase64 || !copyPaste) {
+      if (!transactionId || (!qrCodeBase64 && !copyPaste)) {
         showError("Resposta incompleta da API. Tente novamente.");
         return;
       }
