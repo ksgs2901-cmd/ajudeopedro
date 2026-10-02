@@ -253,7 +253,7 @@
       if (!overlay) return;
 
       if (!res.ok) {
-        showError(data.message || "Não foi possível gerar o PIX. Tente novamente.");
+        showError(data.error || data.message || "Não foi possível gerar o PIX. Tente novamente.");
         return;
       }
 

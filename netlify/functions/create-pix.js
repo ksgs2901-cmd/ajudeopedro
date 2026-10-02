@@ -99,23 +99,18 @@ exports.handler = async (event) => {
 
     const { transactionId } = result.data;
     const payment = result.data.paymentData || {};
+    const qrCodeBase64 = payment.qrCodeBase64 || "";
+    const copyPaste = payment.copyPaste || payment.qrCode || "";
 
-    /* O React espera: { kind, payload (=copyPaste), donationId }
-       Se a API retornar invoiceUrl (PagBank), mandamos checkoutUrl em vez de payload */
-    if (result.data.invoiceUrl && !payment.copyPaste) {
-      return json(200, {
-        kind: "pix",
-        checkoutUrl: result.data.invoiceUrl,
-        donationId: transactionId,
-      });
+    if (!qrCodeBase64 || !copyPaste) {
+      return json(502, { error: "A Blackcat não retornou o QR Code e o código Pix." });
     }
 
     return json(200, {
-      kind: "pix",
-      payload: payment.copyPaste || payment.qrCode || "",
-      donationId: transactionId,
-      /* extra: qrCodeBase64 caso o React seja atualizado para usá-lo */
-      qrCodeBase64: payment.qrCodeBase64 || "",
+      transactionId,
+      qrCodeBase64,
+      copyPaste,
+      expiresAt: payment.expiresAt || "",
     });
 
   } catch (err) {

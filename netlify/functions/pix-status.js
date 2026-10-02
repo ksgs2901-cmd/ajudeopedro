@@ -1,8 +1,8 @@
 /**
  * pix-status.js — Netlify Function
  *
- * Recebe do React: { id: donationId }  (via POST body)
- * Responde para o React: { status: "pago" | "pendente" | "cancelado" }
+ * Recebe transactionId por query string (GET) ou id no body (POST).
+ * Responde com status Blackcat em maiúsculas: PENDING, PAID, CANCELLED.
  *
  * API BlackCat: GET /sales/{transactionId}/status com header X-API-Key
  * Status BlackCat: PENDING → "pendente", PAID → "pago", CANCELLED → "cancelado"
@@ -22,17 +22,20 @@ const json = (statusCode, body) => ({
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-methods": "POST,OPTIONS", "access-control-allow-headers": "content-type" }, body: "" };
-  if (event.httpMethod !== "POST") return json(405, { error: "Método não permitido." });
+  if (event.httpMethod !== "GET" && event.httpMethod !== "POST") return json(405, { error: "Método não permitido." });
 
   const apiKey = process.env.BLACKCAT_API_KEY;
   if (!apiKey) return json(503, { error: "Gateway de pagamento não configurado." });
 
-  let input;
-  try { input = JSON.parse(event.body || "{}"); }
-  catch { return json(400, { error: "Payload inválido." }); }
+  let input = {};
+  if (event.httpMethod === "POST") {
+    try { input = JSON.parse(event.body || "{}"); }
+    catch { return json(400, { error: "Payload inválido." }); }
+  }
 
-  /* O React envia { id: donationId } */
-  const transactionId = String(input.id || "").trim();
+  const transactionId = String(
+    event.queryStringParameters?.transactionId || input.transactionId || input.id || ""
+  ).trim();
   if (!transactionId || !/^[A-Za-z0-9_\-]{1,120}$/.test(transactionId)) {
     return json(400, { error: "ID de transação inválido." });
   }
@@ -49,17 +52,10 @@ exports.handler = async (event) => {
       return json(502, { error: result.message || "Não foi possível consultar o pagamento." });
     }
 
-    /* Mapear status BlackCat → formato que o React entende */
-    const statusMap = {
-      PAID:      "pago",
-      CONFIRMED: "pago",       /* alias por segurança */
-      PENDING:   "pendente",
-      CANCELLED: "cancelado",
-      REFUNDED:  "cancelado",
-    };
-
     const rawStatus = String(result.data?.status || "PENDING").toUpperCase();
-    const status    = statusMap[rawStatus] || "pendente";
+    const status = rawStatus === "CONFIRMED" ? "PAID"
+      : rawStatus === "REFUNDED" ? "CANCELLED"
+        : rawStatus;
 
     return json(200, {
       status,
