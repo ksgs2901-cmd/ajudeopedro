@@ -1,68 +1,66 @@
 /**
  * pix-modal.js — Juntos Pela Vida / Ajude o Pedro
  *
- * Injeta o CSS, gera o modal PIX e consulta o status
- * usando as Netlify Functions /.netlify/functions/create-pix
- * e /.netlify/functions/pix-status.
+ * Integração com a API BlackCat via Netlify Functions:
+ *   POST /.netlify/functions/create-pix  → { transactionId, qrCodeBase64, copyPaste, expiresAt }
+ *   GET  /.netlify/functions/pix-status?transactionId=xxx → { status: "PENDING"|"PAID"|"CANCELLED" }
  *
- * Uso: chame window.openPixModal(amountInCents) em qualquer botão.
+ * Uso público: window.openPixModal(amountInCents)
  * Ex.: openPixModal(10000) → R$ 100,00
  */
-
 (function () {
   "use strict";
 
-  /* ── Injetar CSS ─────────────────────────────────────────── */
+  /* ── Injetar CSS ──────────────────────────────── */
   const stylesheet = document.createElement("link");
   stylesheet.rel = "stylesheet";
   stylesheet.href = "/css/pix-modal.css";
   document.head.appendChild(stylesheet);
 
-  /* ── Helpers ─────────────────────────────────────────────── */
+  /* ── Helpers ──────────────────────────────────── */
   const formatBRL = (cents) =>
-    new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(cents / 100);
+    new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 
   function currentUtm() {
     const q = new URLSearchParams(location.search);
     return Object.fromEntries(
-      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].map(
-        (k) => [k, q.get(k) || ""]
-      )
+      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]
+        .map((k) => [k, q.get(k) || ""])
     );
   }
 
-  /* ── Estado global ───────────────────────────────────────── */
-  let overlay = null;
-  let pollTimer = null;
-  let pollCount = 0;
-  const POLL_INTERVAL = 3000; // ms
-  const POLL_MAX = 100;       // ~5 min
+  /* ── Estado global ────────────────────────────── */
+  let overlay    = null;
+  let pollTimer  = null;
+  let pollCount  = 0;
+  const POLL_INTERVAL = 3000;  // ms entre cada consulta de status
+  const POLL_MAX      = 100;   // ~5 min no total
 
-  /* ── Fechar modal ────────────────────────────────────────── */
+  /* ── Fechar modal ─────────────────────────────── */
   function closeModal() {
     clearTimeout(pollTimer);
     overlay?.remove();
-    overlay = null;
+    overlay   = null;
     pollCount = 0;
   }
 
-  /* ── Selectors convenientes ──────────────────────────────── */
+  /* ── Selector conveniente ─────────────────────── */
   const qs = (sel) => overlay?.querySelector(sel);
 
-  /* ── Mostrar estado de erro ──────────────────────────────── */
+  /* ── Limpar conteúdo dinâmico do body ─────────── */
+  function clearBody(...selectors) {
+    selectors.forEach((s) => qs(s)?.remove());
+  }
+
+  /* ── Mostrar estado de erro ───────────────────── */
   function showError(message) {
     if (!overlay) return;
-    qs(".pix-spinner-wrap")?.remove();
-    qs(".pix-wait-text")?.remove();
-    qs(".pix-qr-wrap")?.remove();
-    qs(".pix-code-field")?.remove();
-    qs(".pix-copy-btn")?.remove();
-    qs(".pix-instructions")?.remove();
-    qs(".pix-confirmed-text")?.remove();
-    qs(".pix-confirmed-sub")?.remove();
+    clearBody(
+      ".pix-spinner-wrap", ".pix-wait-text",
+      ".pix-qr-wrap", ".pix-code-field",
+      ".pix-copy-btn", ".pix-instructions",
+      ".pix-confirmed-text", ".pix-confirmed-sub"
+    );
 
     let errEl = qs(".pix-error");
     if (!errEl) {
@@ -71,163 +69,164 @@
       qs(".pix-body").appendChild(errEl);
     }
     errEl.textContent = message;
-    errEl.hidden = false;
 
-    let retryEl = qs(".pix-retry-btn");
-    if (!retryEl) {
-      retryEl = document.createElement("button");
-      retryEl.type = "button";
+    if (!qs(".pix-retry-btn")) {
+      const retryEl = document.createElement("button");
+      retryEl.type      = "button";
       retryEl.className = "pix-retry-btn";
       retryEl.textContent = "Tentar novamente";
       qs(".pix-body").appendChild(retryEl);
       retryEl.addEventListener("click", () => {
-        errEl.hidden = true;
+        errEl.remove();
         retryEl.remove();
         submitDonation(overlay._amount);
       });
     }
   }
 
-  /* ── Renderizar QR Code + código + botão copiar ──────────── */
-  function showQr(qrUrl, pixCode, amount) {
+  /* ── Mostrar QR Code + código PIX + botão copiar ── */
+  function showQr(qrCodeBase64, copyPaste) {
     if (!overlay) return;
 
-    /* título */
-    qs(".pix-title").innerHTML = "⏳ Aguardando Confirmação";
+    qs(".pix-title").textContent       = "⏳ Aguardando Confirmação";
     qs(".pix-value-label").textContent = "Valor";
 
     const body = qs(".pix-body");
+    clearBody(
+      ".pix-spinner-wrap", ".pix-wait-text",
+      ".pix-error", ".pix-retry-btn"
+    );
 
-    /* remover spinner e wait-text */
-    qs(".pix-spinner-wrap")?.remove();
-    qs(".pix-wait-text")?.remove();
-    qs(".pix-error")?.remove();
-    qs(".pix-retry-btn")?.remove();
-
-    /* QR Code */
+    /* QR Code — a API retorna base64 da imagem */
     if (!qs(".pix-qr-wrap")) {
       const qrWrap = document.createElement("div");
       qrWrap.className = "pix-qr-wrap";
       qrWrap.innerHTML = `
         <div class="pix-qr-box">
-          <img src="${qrUrl}" alt="QR Code PIX" width="200" height="200" />
+          <img src="${qrCodeBase64}" alt="QR Code PIX" width="200" height="200" />
         </div>`;
       body.appendChild(qrWrap);
     }
 
-    /* Campo código */
+    /* Campo copia e cola */
     if (!qs(".pix-code-field")) {
       const codeField = document.createElement("input");
-      codeField.type = "text";
+      codeField.type      = "text";
       codeField.className = "pix-code-field";
-      codeField.readOnly = true;
-      codeField.value = pixCode;
+      codeField.readOnly  = true;
+      codeField.value     = copyPaste;
       codeField.setAttribute("aria-label", "Código PIX copia e cola");
       body.appendChild(codeField);
     }
 
     /* Botão copiar */
     if (!qs(".pix-copy-btn")) {
+      const ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
       const copyBtn = document.createElement("button");
-      copyBtn.type = "button";
+      copyBtn.type      = "button";
       copyBtn.className = "pix-copy-btn";
-      copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar código`;
+      copyBtn.innerHTML = `${ICON} Copiar código`;
       body.appendChild(copyBtn);
 
       copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(pixCode).then(() => {
+        const doCopied = () => {
           copyBtn.classList.add("copied");
-          copyBtn.innerHTML = `✓ Código copiado!`;
+          copyBtn.textContent = "✓ Código copiado!";
           setTimeout(() => {
             copyBtn.classList.remove("copied");
-            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar código`;
+            copyBtn.innerHTML = `${ICON} Copiar código`;
           }, 2500);
-        }).catch(() => {
-          /* Fallback para navegadores sem clipboard API */
-          const ta = document.createElement("textarea");
-          ta.value = pixCode;
-          ta.style.cssText = "position:fixed;top:-999px;left:-999px;opacity:0";
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          ta.remove();
-          copyBtn.classList.add("copied");
-          copyBtn.innerHTML = `✓ Código copiado!`;
-          setTimeout(() => {
-            copyBtn.classList.remove("copied");
-            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar código`;
-          }, 2500);
-        });
+        };
+
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(copyPaste).then(doCopied).catch(() => {
+            fallbackCopy(copyPaste);
+            doCopied();
+          });
+        } else {
+          fallbackCopy(copyPaste);
+          doCopied();
+        }
       });
     }
 
-    /* Instruções */
+    /* Instruções finais */
     if (!qs(".pix-instructions")) {
       const inst = document.createElement("p");
       inst.className = "pix-instructions";
-      inst.innerHTML = `Abra seu banco &bull; Escolha PIX Copia e Cola &bull; Confirme<br><span style="color:#321e13;font-weight:600">A confirmação aparece aqui automaticamente<br>após o pagamento.</span>`;
+      inst.innerHTML  = `Abra seu banco &bull; Escolha PIX Copia e Cola &bull; Confirme<br><strong>A confirmação aparece aqui automaticamente<br>após o pagamento.</strong>`;
       body.appendChild(inst);
     }
   }
 
-  /* ── Mostrar confirmação de pagamento ────────────────────── */
+  /* Fallback para navigator.clipboard indisponível */
+  function fallbackCopy(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;top:-999px;left:-999px;opacity:0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  }
+
+  /* ── Mostrar pagamento confirmado ─────────────── */
   function showConfirmed() {
     if (!overlay) return;
-    qs(".pix-title").textContent = "✅ Pagamento confirmado!";
+
+    qs(".pix-title").textContent       = "✅ Pagamento confirmado!";
     qs(".pix-value-label").textContent = "";
 
     const body = qs(".pix-body");
-    qs(".pix-spinner-wrap")?.remove();
-    qs(".pix-wait-text")?.remove();
-    qs(".pix-qr-wrap")?.remove();
-    qs(".pix-code-field")?.remove();
-    qs(".pix-copy-btn")?.remove();
-    qs(".pix-instructions")?.remove();
-    qs(".pix-error")?.remove();
-    qs(".pix-retry-btn")?.remove();
+    clearBody(
+      ".pix-spinner-wrap", ".pix-wait-text", ".pix-qr-wrap",
+      ".pix-code-field", ".pix-copy-btn", ".pix-instructions",
+      ".pix-error", ".pix-retry-btn"
+    );
 
     const conf = document.createElement("p");
-    conf.className = "pix-confirmed-text";
+    conf.className   = "pix-confirmed-text";
     conf.textContent = "Muito obrigado! 💚";
     body.appendChild(conf);
 
     const sub = document.createElement("p");
-    sub.className = "pix-confirmed-sub";
+    sub.className   = "pix-confirmed-sub";
     sub.textContent = "Sua doação vai fazer a diferença na vida do Pedro.";
     body.appendChild(sub);
 
-    /* fechar automaticamente após 5 s */
     setTimeout(closeModal, 5000);
   }
 
-  /* ── Polling de status ───────────────────────────────────── */
+  /* ── Polling de status ────────────────────────── */
   function pollStatus(transactionId) {
-    if (!overlay) return;
-    pollCount++;
-    if (pollCount > POLL_MAX) return; /* parar após ~5 min */
+    if (!overlay || pollCount++ > POLL_MAX) return;
 
     fetch(`/.netlify/functions/pix-status?transactionId=${encodeURIComponent(transactionId)}`)
       .then((r) => r.json())
       .then((data) => {
         if (!overlay) return;
-        if (data.status === "CONFIRMED" || data.status === "PAID" || data.status === "approved") {
+        /* Status "PAID" = pago; "CANCELLED" = expirado/cancelado */
+        if (data.status === "PAID") {
           showConfirmed();
+        } else if (data.status === "CANCELLED") {
+          showError("O PIX expirou ou foi cancelado. Tente novamente.");
         } else {
+          /* PENDING — continua polling */
           pollTimer = setTimeout(() => pollStatus(transactionId), POLL_INTERVAL);
         }
       })
       .catch(() => {
-        if (!overlay) return;
-        pollTimer = setTimeout(() => pollStatus(transactionId), POLL_INTERVAL);
+        if (overlay) pollTimer = setTimeout(() => pollStatus(transactionId), POLL_INTERVAL);
       });
   }
 
-  /* ── Enviar doação à API ─────────────────────────────────── */
+  /* ── Criar cobrança PIX via Netlify Function ──── */
   async function submitDonation(amount) {
     if (!overlay) return;
 
-    /* Garantir estado de loading */
     const body = qs(".pix-body");
+
+    /* Spinner de loading */
     if (!qs(".pix-spinner-wrap")) {
       const sw = document.createElement("p");
       sw.className = "pix-spinner-wrap";
@@ -238,20 +237,19 @@
     }
     if (!qs(".pix-wait-text")) {
       const wt = document.createElement("p");
-      wt.className = "pix-wait-text";
+      wt.className   = "pix-wait-text";
       wt.textContent = "Só um instante, o QR Code aparece aqui em segundos.";
       body.appendChild(wt);
     }
 
     try {
       const res = await fetch("/.netlify/functions/create-pix", {
-        method: "POST",
+        method:  "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ amount, ...currentUtm() }),
+        body:    JSON.stringify({ amount, ...currentUtm() }),
       });
 
       const data = await res.json();
-
       if (!overlay) return;
 
       if (!res.ok) {
@@ -259,31 +257,33 @@
         return;
       }
 
-      /* A BlackCat API retorna: transactionId, qrCodeUrl (imagem), pixCode (copia e cola) */
-      const transactionId = data.transactionId || data.id || data.transaction_id;
-      const qrUrl = data.qrCodeUrl || data.qr_code_url || data.qrCode || data.qr_code;
-      const pixCode = data.pixCode || data.pix_code || data.copiaecola || data.copia_e_cola || data.emv;
+      /* Campos retornados pela nossa Netlify Function (alinhados com doc BlackCat):
+         - data.transactionId  → ID da transação
+         - data.qrCodeBase64   → "data:image/png;base64,..." para o <img>
+         - data.copyPaste      → string longa do PIX copia e cola
+      */
+      const { transactionId, qrCodeBase64, copyPaste } = data;
 
-      if (!qrUrl || !pixCode || !transactionId) {
-        showError("Resposta da API inválida. Tente novamente.");
+      if (!transactionId || !qrCodeBase64 || !copyPaste) {
+        showError("Resposta incompleta da API. Tente novamente.");
         return;
       }
 
-      showQr(qrUrl, pixCode, amount);
+      showQr(qrCodeBase64, copyPaste);
       pollStatus(transactionId);
-    } catch (err) {
-      if (!overlay) return;
-      showError("Falha de conexão. Verifique sua internet e tente novamente.");
+
+    } catch {
+      if (overlay) showError("Falha de conexão. Verifique sua internet e tente novamente.");
     }
   }
 
-  /* ── Criar modal do zero ─────────────────────────────────── */
+  /* ── Criar e exibir o modal ───────────────────── */
   function createModal(amount) {
-    closeModal(); /* fechar qualquer modal aberto */
+    closeModal();
 
-    overlay = document.createElement("div");
+    overlay          = document.createElement("div");
     overlay.className = "pix-backdrop";
-    overlay._amount = amount;
+    overlay._amount  = amount;
 
     overlay.innerHTML = `
       <section class="pix-dialog" role="dialog" aria-modal="true" aria-labelledby="pix-modal-title">
@@ -296,7 +296,6 @@
         />
 
         <h2 class="pix-title" id="pix-modal-title">Gerando seu Pix...</h2>
-
         <p class="pix-value-label">Valor da contribuição</p>
         <p class="pix-amount-display">${formatBRL(amount)}</p>
 
@@ -306,24 +305,22 @@
     document.body.appendChild(overlay);
 
     /* Fechar ao clicar no backdrop */
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) closeModal();
-    });
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
 
-    /* Fechar ao clicar no X */
+    /* Fechar com botão X */
     overlay.querySelector(".pix-close").addEventListener("click", closeModal);
 
     /* Fechar com Escape */
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") { closeModal(); document.removeEventListener("keydown", onKeyDown); }
+    const onKey = (e) => {
+      if (e.key === "Escape") { closeModal(); document.removeEventListener("keydown", onKey); }
     };
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKey);
 
     /* Iniciar geração do PIX */
     submitDonation(amount);
   }
 
-  /* ── API pública ─────────────────────────────────────────── */
+  /* ── API pública ──────────────────────────────── */
   window.openPixModal = createModal;
 
 })();
