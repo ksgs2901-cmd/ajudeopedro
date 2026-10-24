@@ -1,6 +1,5 @@
-/* ===== PIX MODAL — Juntos Pela Vida ===== */
+/* ===== PIX MODAL - Vakinha Style ===== */
 
-/* --- Backdrop / overlay --- */
 .pix-backdrop {
   position: fixed;
   inset: 0;
@@ -8,95 +7,88 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(30, 18, 10, 0.68);
+  background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
 }
 
-/* --- Dialog card --- */
 .pix-dialog {
   position: relative;
-  width: min(100%, 460px);
+  width: min(100%, 440px);
   max-height: min(92vh, 820px);
   overflow-y: auto;
-  border: 1px solid #edd5a8;
-  border-radius: 20px;
-  background: #fffdf8;
-  color: #321e13;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
-  font-family: inherit;
+  border: 1px solid #d4fac3;
+  border-radius: 16px;
+  background: #fff;
+  color: #282828;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+  font-family: 'Lato', Arial, sans-serif;
   text-align: center;
-  padding: 30px 28px 28px;
+  padding: 28px 24px 24px;
 }
 
-/* --- Close button (X) --- */
 .pix-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #e8d5b5;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #dfdfdf;
   border-radius: 8px;
   background: #fff;
-  color: #8b5a2a;
-  font-size: 20px;
+  color: #8a8a8a;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
 .pix-close:hover {
-  background: #fef3e7;
-  color: #321e13;
+  background: #f0fff5;
+  color: #282828;
 }
 
-/* --- Logo --- */
 .pix-logo {
-  width: 90px;
+  width: 80px;
   height: auto;
   object-fit: contain;
   margin: 0 auto 4px;
   display: block;
 }
 
-/* --- Title (below logo) --- */
 .pix-title {
-  margin: 12px 0 0;
-  font-size: 17px;
+  margin: 10px 0 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
   font-weight: 700;
-  color: #321e13;
+  color: #24ca68;
   line-height: 1.35;
 }
 
-/* --- Value label ("Valor da contribuição" / "Valor") --- */
 .pix-value-label {
-  margin: 18px 0 4px;
+  margin: 16px 0 2px;
   font-size: 13px;
-  color: #8b5a2a;
+  color: #8a8a8a;
   letter-spacing: 0.01em;
 }
 
-/* --- Amount displayed large in orange --- */
 .pix-amount-display {
-  margin: 0 0 16px;
-  font-size: 38px;
+  margin: 0 0 14px;
+  font-size: 36px;
   font-weight: 800;
-  color: #c85a00;
+  color: #24ca68;
   letter-spacing: -0.5px;
   line-height: 1.15;
 }
 
-/* --- Loading state text ("Só um instante...") --- */
 .pix-wait-text {
-  margin: 12px auto 0;
+  margin: 10px auto 0;
   font-size: 14px;
-  color: #6b4a2a;
+  color: #5a5a5a;
   max-width: 280px;
   line-height: 1.55;
 }
 
-/* --- Spinner --- */
 .pix-spinner-wrap {
   display: flex;
   justify-content: center;
@@ -105,8 +97,8 @@
 .pix-spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid #edd5a8;
-  border-top-color: #c85a00;
+  border: 3px solid #d4fac3;
+  border-top-color: #24ca68;
   border-radius: 50%;
   animation: pix-spin 0.75s linear infinite;
 }
@@ -114,17 +106,16 @@
   to { transform: rotate(360deg); }
 }
 
-/* --- QR Code container --- */
 .pix-qr-wrap {
-  margin: 20px auto 16px;
+  margin: 16px auto 14px;
   display: flex;
   justify-content: center;
 }
 .pix-qr-box {
   display: inline-block;
-  padding: 16px;
-  border: 1.5px solid #edd5a8;
-  border-radius: 16px;
+  padding: 14px;
+  border: 1.5px solid #d4fac3;
+  border-radius: 12px;
   background: #fff;
 }
 .pix-qr-box img {
@@ -134,18 +125,17 @@
   object-fit: contain;
 }
 
-/* --- PIX code field (truncated text input) --- */
 .pix-code-field {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  padding: 13px 16px;
-  margin: 0 0 12px;
-  border: 1.5px solid #c85a00;
-  border-radius: 10px;
-  background: #fffdf8;
-  color: #6b4a2a;
-  font-size: 13px;
+  padding: 12px 14px;
+  margin: 0 0 10px;
+  border: 1.5px solid #24ca68;
+  border-radius: 8px;
+  background: #fff;
+  color: #3a3a3a;
+  font-size: 12px;
   font-family: inherit;
   white-space: nowrap;
   overflow: hidden;
@@ -154,7 +144,6 @@
   outline: none;
 }
 
-/* --- Copy button (orange, full-width) --- */
 .pix-copy-btn {
   display: flex;
   align-items: center;
@@ -162,40 +151,35 @@
   gap: 8px;
   width: 100%;
   box-sizing: border-box;
-  padding: 15px 20px;
+  padding: 14px 20px;
   border: 0;
-  border-radius: 10px;
-  background: #c85a00;
+  border-radius: 8px;
+  background: #24ca68;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
-  font-family: inherit;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
 }
 .pix-copy-btn:hover {
-  background: #a84900;
+  background: #009d4e;
 }
 .pix-copy-btn:active {
   transform: scale(0.98);
 }
-.pix-copy-btn.copied {
-  background: #3a7d44;
-}
 
-/* --- Instructions below copy button --- */
 .pix-instructions {
-  margin: 14px 0 0;
-  font-size: 13px;
-  color: #6b4a2a;
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #8a8a8a;
   line-height: 1.55;
 }
 .pix-instructions strong,
 .pix-instructions b {
-  color: #321e13;
+  color: #282828;
 }
 
-/* --- Error message --- */
 .pix-error {
   margin: 12px 0 8px;
   padding: 12px 16px;
@@ -207,15 +191,14 @@
   text-align: center;
 }
 
-/* --- Retry button --- */
 .pix-retry-btn {
   display: inline-block;
   margin: 8px auto 0;
   padding: 10px 24px;
-  border: 1.5px solid #c85a00;
+  border: 1.5px solid #24ca68;
   border-radius: 8px;
   background: transparent;
-  color: #c85a00;
+  color: #24ca68;
   font-size: 14px;
   font-weight: 600;
   font-family: inherit;
@@ -223,18 +206,34 @@
   transition: background 0.15s;
 }
 .pix-retry-btn:hover {
-  background: #fef3e7;
+  background: #f0fff5;
 }
 
-/* --- Confirmed state --- */
 .pix-confirmed-text {
   margin: 16px 0 4px;
   font-size: 22px;
   font-weight: 700;
-  color: #3a7d44;
+  color: #24ca68;
 }
 .pix-confirmed-sub {
   font-size: 14px;
-  color: #6b4a2a;
+  color: #5a5a5a;
   margin: 0;
+}
+
+.pix-checkout-link {
+  display: block;
+  margin: 12px auto;
+  padding: 14px 20px;
+  background: #24ca68;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.pix-checkout-link:hover {
+  background: #009d4e;
 }

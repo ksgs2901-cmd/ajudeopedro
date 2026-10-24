@@ -249,9 +249,10 @@
     overlay.innerHTML = `
       <section class="pix-dialog" role="dialog" aria-modal="true" aria-labelledby="pix-modal-title">
         <button class="pix-close" type="button" aria-label="Fechar">&#x2715;</button>
-        <img class="pix-logo"
-          src="/__l5e/assets-v1/62a9e234-bc8a-4819-a7a0-0ce611ae11d0/logo-juntos-pela-vida-pedro.png"
-          alt="Juntos Pela Vida" />
+        <div style="margin:0 auto 4px;text-align:center">
+          <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#24ca68" stroke-width="1.5" style="display:block;margin:0 auto"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div style="font-family:Montserrat,sans-serif;font-weight:900;font-size:13px;color:#24ca68;letter-spacing:.03em;margin-top:4px">VAKINHA</div>
+        </div>
         <h2 class="pix-title" id="pix-modal-title">Gerando seu Pix...</h2>
         <p class="pix-value-label">Valor da contribuição</p>
         <p class="pix-amount-display">${formatBRL(amount)}</p>
