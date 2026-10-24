@@ -1,5 +1,5 @@
+# Substituir o entry point do React pelo pix-modal.js (página estática com modal de PIX)
 /assets/index-EWzgYGoh.js /js/pix-modal.js 200!
-/_serverFn/* /.netlify/functions/server?fnHash=:splat 200!
-/api/create-pix /.netlify/functions/create-pix 200
-/api/pix-status /.netlify/functions/pix-status 200
+
+# SPA fallback
 /* /index.html 200
