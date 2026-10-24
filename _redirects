@@ -1,5 +1,2 @@
-# Substituir o entry point do React pelo pix-modal.js (página estática com modal de PIX)
-/assets/index-EWzgYGoh.js /js/pix-modal.js 200!
-
 # SPA fallback
 /* /index.html 200

@@ -21,6 +21,28 @@
   const formatBRL = (cents) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 
+  /* Gera QR Code como Data URL via API externa */
+  async function generateQrImage(text, size) {
+    try {
+      const img = await new Promise((resolve, reject) => {
+        const el = new Image();
+        el.crossOrigin = "anonymous";
+        el.onload = () => resolve(el);
+        el.onerror = reject;
+        el.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&margin=8`;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      return canvas.toDataURL("image/png");
+    } catch { return ""; }
+  }
+
+  const isDataUri = (s) => /^data:image\//i.test(s);
+
   function currentUtm() {
     const q = new URLSearchParams(location.search);
     return Object.fromEntries(
@@ -85,7 +107,7 @@
   }
 
   /* ── Mostrar QR Code + código PIX + botão copiar ── */
-  function showQr(qrCodeBase64, copyPaste) {
+  async function showQr(qrCodeBase64, copyPaste) {
     if (!overlay) return;
 
     qs(".pix-title").textContent       = "📱 Aguardando Confirmação";
@@ -94,13 +116,21 @@
     const body = qs(".pix-body");
     let html = "";
 
-    /* QR Code */
-    if (qrCodeBase64) {
-      const imageData = String(qrCodeBase64).trim();
-      const isDataUri = /^data:image\/(?:png|jpeg|webp);base64,/i.test(imageData);
-      const src = isDataUri ? imageData : `data:image/png;base64,${imageData}`;
+    /* QR Code - determinar src da imagem */
+    const pixCode = copyPaste || qrCodeBase64 || "";
+    let qrSrc = "";
+
+    if (qrCodeBase64 && isDataUri(qrCodeBase64)) {
+      /* Já é uma imagem base64 */
+      qrSrc = qrCodeBase64;
+    } else if (pixCode) {
+      /* É texto (BR Code) — gerar QR no navegador */
+      qrSrc = await generateQrImage(pixCode, 560);
+    }
+
+    if (qrSrc) {
       html += `<div class="pix-qr-wrap"><div class="pix-qr-box">
-        <img alt="QR Code PIX" width="200" height="200" src="${src}"/>
+        <img alt="QR Code PIX" width="200" height="200" src="${qrSrc}"/>
       </div></div>`;
     }
 
