@@ -1,8 +1,9 @@
 /**
  * pix-modal.js — Juntos Pela Vida / Ajude o Pedro
  *
- * Gera PIX localmente no navegador (sem API externa).
- * Clicou no valor → abre modal com QR Code + código copia e cola.
+ * Integração com a API BlackCat via Cloudflare Pages Functions:
+ *   POST /api/create-pix  → { transactionId, qrCodeBase64, copyPaste, expiresAt }
+ *   GET  /api/pix-status?transactionId=xxx → { status: "PENDING"|"PAID"|"CANCELLED" }
  *
  * Uso público: window.openPixModal(amountInCents)
  * Ex.: openPixModal(5000) → R$ 50,00
@@ -16,90 +17,31 @@
   stylesheet.href = "/css/pix-modal.css";
   document.head.appendChild(stylesheet);
 
-  /* ── Configuração PIX ── */
-  const PIX_KEY  = "805a6b5b-8348-4ea4-9be1-f26d470fdc4f";
-  const PIX_NAME = "INSTITUTO ESPERANCA DO BEM LTDA";
-  const PIX_CITY = "SAO PAULO";
-
   /* ── Helpers ── */
   const formatBRL = (cents) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 
-  /* Normaliza string: remove acentos, caracteres especiais, uppercase */
-  function sanitize(str, maxLen) {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^A-Za-z0-9 .\-]/g, "")
-      .trim()
-      .toUpperCase()
-      .slice(0, maxLen);
-  }
-
-  /* Monta campo EMV TLV: ID(2) + Length(2) + Value */
-  function tlv(id, value) {
-    return id + String(value.length).padStart(2, "0") + value;
-  }
-
-  /* CRC16-CCITT */
-  function crc16(str) {
-    let crc = 0xFFFF;
-    for (let i = 0; i < str.length; i++) {
-      crc ^= str.charCodeAt(i) << 8;
-      for (let j = 0; j < 8; j++) {
-        crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
-        crc &= 0xFFFF;
-      }
-    }
-    return crc.toString(16).toUpperCase().padStart(4, "0");
-  }
-
-  /* Gera payload PIX EMV (BR Code) */
-  function generatePixPayload(valueBRL) {
-    const merchant = tlv("00", "BR.GOV.BCB.PIX") + tlv("01", PIX_KEY);
-    const payload =
-      tlv("00", "01") +
-      tlv("01", "12") +
-      tlv("26", merchant) +
-      tlv("52", "0000") +
-      tlv("53", "986") +
-      tlv("54", valueBRL.toFixed(2)) +
-      tlv("58", "BR") +
-      tlv("59", sanitize(PIX_NAME, 25)) +
-      tlv("60", sanitize(PIX_CITY, 15)) +
-      tlv("62", tlv("05", "***")) +
-      "6304";
-    return payload + crc16(payload);
-  }
-
-  /* Gera QR Code como Data URL (canvas puro, sem dependência externa) */
-  function generateQrCanvas(text, size) {
-    return new Promise((resolve) => {
-      /* Tenta usar a lib qrcode se disponível, senão usa API externa */
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, size, size);
-        ctx.drawImage(img, 0, 0, size, size);
-        resolve(canvas.toDataURL("image/png"));
-      };
-      img.onerror = () => resolve("");
-      img.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&margin=8`;
-    });
+  function currentUtm() {
+    const q = new URLSearchParams(location.search);
+    return Object.fromEntries(
+      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]
+        .map((k) => [k, q.get(k) || ""])
+    );
   }
 
   /* ── Estado global ── */
-  let overlay = null;
+  let overlay    = null;
+  let pollTimer  = null;
+  let pollCount  = 0;
+  const POLL_INTERVAL = 3000;
+  const POLL_MAX      = 100;
 
   /* ── Fechar modal ── */
   function closeModal() {
+    clearTimeout(pollTimer);
     overlay?.remove();
-    overlay = null;
+    overlay   = null;
+    pollCount = 0;
   }
 
   const qs = (sel) => overlay?.querySelector(sel);
@@ -112,13 +54,115 @@
       <button type="button" class="pix-retry-btn">Tentar novamente</button>`;
     body.querySelector(".pix-retry-btn").addEventListener("click", () => {
       body.innerHTML = "";
-      generateAndShow(overlay._amount);
+      submitDonation(overlay._amount);
     });
   }
 
-  /* ── Gerar PIX e mostrar QR ── */
-  async function generateAndShow(amountCents) {
+  /* ── Mostrar confirmação ── */
+  function showConfirmed() {
     if (!overlay) return;
+    qs(".pix-title").textContent = "✅ Pagamento Confirmado!";
+    const body = qs(".pix-body");
+    body.innerHTML = `
+      <p class="pix-confirmed-text">Obrigado pela sua contribuição! 💚</p>
+      <p class="pix-confirmed-sub">Sua doação ajuda o Pedro a continuar respirando.</p>`;
+
+    /* Facebook Pixel */
+    if (typeof window !== "undefined" && window.fbq) {
+      const val = overlay._amount / 100;
+      window.fbq("track", "Purchase", { value: val, currency: "BRL" });
+    }
+  }
+
+  /* ── Mostrar link de checkout externo ── */
+  function showCheckoutLink(url) {
+    if (!overlay) return;
+    qs(".pix-title").textContent = "📱 Pague pelo link";
+    const body = qs(".pix-body");
+    body.innerHTML = `
+      <a href="${url}" target="_blank" rel="noopener" class="pix-checkout-link">Abrir página de pagamento</a>
+      <p class="pix-instructions">Clique acima para abrir a página de pagamento segura.</p>`;
+  }
+
+  /* ── Mostrar QR Code + código PIX + botão copiar ── */
+  function showQr(qrCodeBase64, copyPaste) {
+    if (!overlay) return;
+
+    qs(".pix-title").textContent       = "📱 Aguardando Confirmação";
+    qs(".pix-value-label").textContent = "Valor";
+
+    const body = qs(".pix-body");
+    let html = "";
+
+    /* QR Code */
+    if (qrCodeBase64) {
+      const imageData = String(qrCodeBase64).trim();
+      const isDataUri = /^data:image\/(?:png|jpeg|webp);base64,/i.test(imageData);
+      const src = isDataUri ? imageData : `data:image/png;base64,${imageData}`;
+      html += `<div class="pix-qr-wrap"><div class="pix-qr-box">
+        <img alt="QR Code PIX" width="200" height="200" src="${src}"/>
+      </div></div>`;
+    }
+
+    /* Campo copia e cola */
+    if (copyPaste) {
+      html += `<input type="text" class="pix-code-field" readonly value="${copyPaste}" aria-label="Código PIX copia e cola"/>`;
+      html += `<button type="button" class="pix-copy-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg> Copiar código Pix
+      </button>`;
+    }
+
+    html += `<p class="pix-instructions">Abra o app do seu banco, escolha <strong>Pix</strong> e escaneie o QR Code acima ou cole o código.</p>`;
+
+    body.innerHTML = html;
+
+    /* Botão copiar */
+    const copyBtn = body.querySelector(".pix-copy-btn");
+    if (copyBtn && copyPaste) {
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(copyPaste);
+          copyBtn.innerHTML = `✅ Copiado!`;
+          setTimeout(() => {
+            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg> Copiar código Pix`;
+          }, 2000);
+        } catch {
+          const field = body.querySelector(".pix-code-field");
+          if (field) { field.select(); field.setSelectionRange(0, 99999); }
+        }
+      });
+    }
+  }
+
+  /* ── Polling de status ── */
+  function pollStatus(transactionId) {
+    if (!overlay || ++pollCount > POLL_MAX) return;
+
+    fetch(`/api/pix-status?transactionId=${encodeURIComponent(transactionId)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!overlay) return;
+        if (data.status === "PAID") {
+          showConfirmed();
+        } else if (data.status === "CANCELLED") {
+          showError("O PIX expirou ou foi cancelado. Tente novamente.");
+        } else {
+          pollTimer = setTimeout(() => pollStatus(transactionId), POLL_INTERVAL);
+        }
+      })
+      .catch(() => {
+        if (overlay) pollTimer = setTimeout(() => pollStatus(transactionId), POLL_INTERVAL);
+      });
+  }
+
+  /* ── Criar cobrança PIX via API ── */
+  async function submitDonation(amount) {
+    if (!overlay) return;
+
     const body = qs(".pix-body");
 
     /* Spinner */
@@ -129,74 +173,48 @@
       <p class="pix-wait-text">Só um instante, o QR Code aparece aqui em segundos.</p>`;
 
     try {
-      const valueBRL = amountCents / 100;
-      const pixCode = generatePixPayload(valueBRL);
-      const qrImage = await generateQrCanvas(pixCode, 560);
-
-      if (!overlay) return;
-
-      qs(".pix-title").textContent = "📱 Escaneie o QR Code";
-      qs(".pix-value-label").textContent = "Valor";
-
-      let html = "";
-
-      if (qrImage) {
-        html += `<div class="pix-qr-wrap"><div class="pix-qr-box">
-          <img alt="QR Code PIX" width="200" height="200" src="${qrImage}"/>
-        </div></div>`;
-      }
-
-      html += `<input type="text" class="pix-code-field" readonly value="${pixCode}" aria-label="Código PIX copia e cola"/>`;
-      html += `<button type="button" class="pix-copy-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg> Copiar código Pix
-      </button>`;
-      html += `<p class="pix-instructions">Abra o app do seu banco, escolha <strong>Pix</strong> e escaneie o QR Code acima ou cole o código.</p>`;
-
-      body.innerHTML = html;
-
-      /* Botão copiar */
-      body.querySelector(".pix-copy-btn").addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(pixCode);
-          const btn = body.querySelector(".pix-copy-btn");
-          btn.innerHTML = `✅ Copiado!`;
-          setTimeout(() => {
-            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg> Copiar código Pix`;
-          }, 2000);
-        } catch {
-          /* fallback: selecionar o campo */
-          const field = body.querySelector(".pix-code-field");
-          field.select();
-          field.setSelectionRange(0, 99999);
-        }
+      const res = await fetch("/api/create-pix", {
+        method:  "POST",
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({ amountCents: amount, ...currentUtm() }),
       });
 
-      /* Facebook Pixel - track AddToCart */
-      if (typeof window !== "undefined" && window.fbq) {
-        window.fbq("track", "AddToCart", {
-          value: valueBRL,
-          currency: "BRL",
-          content_name: "Doação Juntos Pela Vida - Pedro",
-          content_type: "product",
-        });
+      const data = await res.json();
+      if (!overlay) return;
+
+      if (!res.ok) {
+        showError(data.error || data.message || "Não foi possível gerar o PIX. Tente novamente.");
+        return;
       }
 
+      if (data.checkoutUrl && data.transactionId) {
+        showCheckoutLink(data.checkoutUrl);
+        pollStatus(data.transactionId);
+        return;
+      }
+
+      const { transactionId, qrCodeBase64, copyPaste } = data;
+
+      if (!transactionId || (!qrCodeBase64 && !copyPaste)) {
+        showError("Resposta incompleta da API. Tente novamente.");
+        return;
+      }
+
+      showQr(qrCodeBase64, copyPaste);
+      pollStatus(transactionId);
+
     } catch {
-      if (overlay) showError("Não conseguimos gerar o QR Code. Tente novamente.");
+      if (overlay) showError("Falha de conexão. Verifique sua internet e tente novamente.");
     }
   }
 
   /* ── Criar e exibir o modal ── */
-  function createModal(amountCents) {
+  function createModal(amount) {
     closeModal();
 
-    overlay = document.createElement("div");
+    overlay          = document.createElement("div");
     overlay.className = "pix-backdrop";
-    overlay._amount = amountCents;
+    overlay._amount  = amount;
 
     overlay.innerHTML = `
       <section class="pix-dialog" role="dialog" aria-modal="true" aria-labelledby="pix-modal-title">
@@ -206,7 +224,7 @@
           alt="Juntos Pela Vida" />
         <h2 class="pix-title" id="pix-modal-title">Gerando seu Pix...</h2>
         <p class="pix-value-label">Valor da contribuição</p>
-        <p class="pix-amount-display">${formatBRL(amountCents)}</p>
+        <p class="pix-amount-display">${formatBRL(amount)}</p>
         <div class="pix-body"></div>
       </section>`;
 
@@ -219,7 +237,7 @@
     };
     document.addEventListener("keydown", onKey);
 
-    generateAndShow(amountCents);
+    submitDonation(amount);
   }
 
   /* ── API pública ── */
