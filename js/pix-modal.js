@@ -275,7 +275,7 @@
 
   /* ── Bind botões de valor ── */
   function bindAmountButtons() {
-    document.querySelectorAll(".gridWrap .opt").forEach((button) => {
+    document.querySelectorAll(".gridWrap .opt, .vk-grid .opt").forEach((button) => {
       if (button.dataset.pixModalBound === "true") return;
       const match = button.textContent.match(/R\$\s*([\d.]+)/);
       const amount = match ? Number(match[1].replace(/\./g, "")) : NaN;
